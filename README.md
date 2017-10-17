@@ -1,5 +1,7 @@
 # DDH_HomelessServices
 
+https://greeninfo-network.github.io/DDH_HomelessServices/
+
 Client: Pro-bono work for Dorothy Day House, Homeless Services
 
 QuickBooks: GIN:Marketing:News Maps
@@ -22,5 +24,12 @@ Service locations are hosted at Airtable: https://airtable.com/tblCsWJj89Fo3qzXF
 
 ## Development and Testing
 
-webpack, es2015, etc info here
+Babel, SASS/SCSS, Webpack.
 
+**index.html** **index.css** **index.js** are browser-side "deliverables" These are compiled by `npm run build` using webpack. Note that there **are** included in version control, so they may be hosted via Github Pages without us needing to work in additional tooling.
+
+Upon initial setup on your system, run `nvm use` and `yarn install` to set up build tools.
+
+`npm run serve` will run a HTTP server, as well as watching and rebuilding (below).
+
+`npm run watch` will watch for changes and re-run `npm rin build` upon detecting changes.

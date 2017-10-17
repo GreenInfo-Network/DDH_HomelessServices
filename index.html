@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>East Bay Homeless Services</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <!-- Angular and Angular Bootstrap -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/checklist-model/0.11.0/checklist-model.min.js"></script>
+
+    <!-- jQuery and Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Google Maps API -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL9z5bBfPe2FfwUmUik-xX1_unw-7PwYA"></script>
+
+    <!-- local config -->
+    <link href="index.css?Tue Oct 17 2017 16:53:37 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
+    <script src="index.js?Tue Oct 17 2017 16:53:37 GMT-0700 (Pacific Daylight Time)"></script>
+</head>
+<body ng-app="app" ng-controller="PageController as app">
+
+    <!-- header navbar -->
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">East Bay Homeless Services</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- search form -->
+    <div ng-show="! app.search.done" class="container-fluid" id="searchform">
+        <h3>What Do You Need?</h3>
+        <span ng-repeat="option in app.services_list">
+            <label><input type="checkbox" checklist-model="app.search.services" checklist-value="option" /> {{ option }}</label><br/>
+        </span>
+
+        <h3>When?</h3>
+        <button class="btn btn-block btn-primary" ng-click="app.pickDate('today');">Today</button>
+        <button class="btn btn-block btn-primary" ng-click="app.pickDate('tomorrow');">Tomorrow</button>
+        <button class="btn btn-block btn-primary" ng-click="app.pickDate('clear'); app.pickDate('date');">Pick a Day</button>
+
+        <br/>
+        <button class="btn btn-block btn-success" ng-click="app.performSearch();"><i class="glyphicon glyphicon-search"></i> Search</button>
+    </div>
+
+    <!-- search had no results -->
+    <div ng-show="app.search.done && ! app.results.length" class="container-fluid" id="noresults">
+nothing
+    </div>
+
+    <!-- results listing -->
+    <div ng-show="app.search.done && app.results.length && ! app.showmap" class="container-fluid" id="resultslist">
+listing
+    </div>
+
+    <!-- results map -->
+    <div ng-show="app.search.done && app.results.length && app.showmap" class="container-fluid" id="resultsmap">
+map
+    </div>
+
+    <!-- busy spinner -->
+    <div ng-show="app.search.busy" class="container-fluid" id="busy">
+        <img src="images/spinner.gif" />
+    </div>
+
+    <!-- footer -->
+    <div class="container-fluid" id="footer">
+        <div class="row">
+            <div class="col-xs-8 left">
+                &nbsp;
+            </div>
+            <div class="col-xs-4 right">
+                <a target="_blank" href="http://www.greeninfo.org/"><img src="images/greeninfo.png" /></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- date picker modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal_datepicker">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Pick a Date</h4>
+                </div>
+                <div class="modal-body">
+                    <div uib-datepicker ng-model="app.search.date" datepicker-options="{ showWeeks: false, initDate: app.today, minDate: app.today }" ng-change="app.closeDatePicker();"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108260615-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-108260615-1');
+    </script>
+
+</body>
+</html>

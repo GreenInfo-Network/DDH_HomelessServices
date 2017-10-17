@@ -1,0 +1,101 @@
+// this page's HTML template with the [hash] cache-buster
+// and the only stylesheet
+require('./index.scss');
+require('./index.src.html');
+
+//
+// begin JavaScript code
+// AngularJS with a conjtroller in ES2015 class syntax
+// and a pinch of jQuery for date pickers
+//
+
+// API key for Airtable
+// USE A READ-ONLY USER because this could become visible to anyone who views the source
+const AIRTABLE_API_KEY = "keymXIGCYEoPy4vib";
+
+// the list of services offered for selection
+// this MUST match the domain values in the Airtable
+const SERVICES_OFFERED = [
+    "Case Management",
+    "Clothing/Blankets/Sleeping Bags",
+    "Computer Access",
+    "Drop In",
+    "Food",
+    "Health Care",
+    "Housing",
+    "Hygiene",
+    "Legal",
+    "Mail",
+    "Mental Health",
+    "Phone",
+    "Referrals",
+    "Restroom",
+    "Services Offered",
+    "Substance Abuse",
+];
+
+// the controller class and then launch
+class PageController {
+    // match this argument list to the $inject list provided below... or weird things will happen
+    constructor($scope, $http) {
+        // injections we want to pass into other methods (sigh)
+        this.$http = $http;
+        this.$scope = $scope;
+
+        // initial search-and-results state
+        this.today = new Date(); // used for callenar date picker
+        this.results = [];
+        this.search = {
+            // search params: date and services
+            services: [],
+            date: null,
+            // metadata: are we busy? have we in fact run?
+            busy: false,
+            done: false,
+        };
+        this.showmap = false;
+
+        // assign some constants into scope so we can use them to build the UI
+        this.services_list = SERVICES_OFFERED;
+    }
+
+    openDatePicker () {
+        $('#modal_datepicker').modal('show');
+    }
+    closeDatePicker () {
+        $('#modal_datepicker').modal('hide');
+    }
+    pickDate (which) {
+        // accepts a named day (today or tomorrow) or "date" to pick one
+        switch (which) {
+            case 'today':
+                this.search.date = new Date();
+                break;
+            case 'tomorrow':
+                this.search.date = new Date();
+                this.search.date.setDate(this.search.date.getDate() + 1);
+                break;
+            case 'date':
+                this.openDatePicker(); // has a change handler which will set search.date
+                break;
+            case 'clear':
+                this.search.date = null;
+                break;
+        }
+    }
+
+    performSearch () {
+        var params = {
+            date: this.search.date.toISOString().substr(0, 10),
+        };
+        console.log(this.search);
+    }
+}
+
+PageController.$inject = [ '$scope', '$http' ];
+
+angular.module('app', [
+    'checklist-model',
+    'ui.bootstrap',
+])
+.controller('PageController', PageController);
