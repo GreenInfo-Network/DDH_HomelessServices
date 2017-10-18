@@ -26,6 +26,21 @@ label {
 }
 
 /*
+ * HEADER HACKS
+ */
+
+.navbar-header a.logoimage {
+    float: right;
+    margin-right: 5px;
+    margin-top: 8px;
+
+    img {
+        height: 32px;
+    }
+}
+
+
+/*
  * CALENDAR DATE PICKER THING
  */
 
@@ -79,6 +94,8 @@ nav.navbar {
 
 #footer {
     margin-top: 0.25in;
+
+    border-top: 2px solid silver;
 }
 
 #modal_datepicker {
