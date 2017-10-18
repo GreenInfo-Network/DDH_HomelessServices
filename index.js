@@ -150,7 +150,7 @@ var SERVICES_OFFERED = ["Case Management", "Clothing/Blankets/Sleeping Bags", "C
 
 var PageController = function () {
     // match this argument list to the $inject list provided below... or weird things will happen
-    function PageController($scope, $http) {
+    function PageController($scope, $http, $window, $timeout) {
         var _this = this;
 
         _classCallCheck(this, PageController);
@@ -184,13 +184,68 @@ var PageController = function () {
 
         // start watching our location: null for unknown, or [ lat, lng ]
         // we use this to update a marker on the map, and to sort the list by what's closest
-        this.geolocation = null;
+        this.geolocation = [0, 0];
         navigator.geolocation.watchPosition(function (position) {
-            _this.geolocation = [parseFloat(position.coords.latitude), parseFloat(position.coords.longitude)];
+            $scope.$evalAsync(function () {
+                _this.geolocation = [parseFloat(position.coords.latitude), parseFloat(position.coords.longitude)];
+            });
         }, function (error) {
             console.warn('Geolocation: ' + err.message);
         }, {
             enableHighAccuracy: true
+        });
+
+        $scope.$watchCollection(function () {
+            return _this.geolocation;
+        }, this.updateGeolocationResultsList(), true);
+        $scope.$watchCollection(function () {
+            return _this.geolocation;
+        }, this.updateGeolocationMapmarker(), true);
+
+        // start the map
+        this.resultsmap = new google.maps.Map(document.getElementById('resultsmap'), {
+            center: new google.maps.LatLng(0, 0),
+            zoom: 16,
+            mapTypeId: google.maps.MapTypeId.TERRAIN,
+            scrollwheel: false,
+            fullscreenControl: false,
+            streetViewControl: false,
+            mapTypeControlOptions: {
+                position: google.maps.ControlPosition.TOP_RIGHT,
+                mapTypeIds: [google.maps.MapTypeId.TERRAIN, google.maps.MapTypeId.HYBRID]
+            }
+        });
+
+        this.resultsmap.youarehere = new google.maps.Marker({
+            position: { lat: 0, lng: 0 },
+            title: "You Are Here",
+            icon: '/images/youarehere.gif'
+        });
+
+        google.maps.event.addListenerOnce(this.resultsmap, 'idle', function () {
+            this.mapTypes[google.maps.MapTypeId.HYBRID].name = 'Photo'; // hack to rename the layer's name in the control
+        });
+
+        // add map workarounds: they hate being invisible and malfunction strangely
+        // tell GMap that its size has changed (even though it has not)
+        angular.element($window).on('resize', function () {
+            if (!_this.showmap) return;
+
+            $timeout(function () {
+                google.maps.event.trigger(_this.resultsmap, 'resize');
+
+                if (_this.geolocation) {
+                    _this.resultsmap.setCenter({ lat: _this.geolocation[0], lng: _this.geolocation[1] });
+                }
+            }, 100);
+        });
+
+        $scope.$watch(function () {
+            return _this.showmap;
+        }, function () {
+            if (_this.showmap) {
+                angular.element($window).triggerHandler('resize');
+            }
         });
     }
 
@@ -272,23 +327,60 @@ var PageController = function () {
                     item.fields.AgencyName = item.fields.AgencyName[0];
                     item.fields.LatLng = item.fields.lat && item.fields.lng ? [parseFloat(item.fields.lat[0]), parseFloat(item.fields.lng[0])] : null; // can be empty!
 
-                    // new synthetic field: DistanceMiles from your location
-                    item.fields.DistanceMiles = item.fields.LatLng ? haversineDistance(_this2.geolocation, item.fields.LatLng) : null;
+                    // new synthetic field: DistanceMiles from your location; to be filled in afterward, declared here for clarity + documentation
+                    item.fields.DistanceMiles = null;
 
                     return item.fields;
                 });
 
-                _this2.search.results.sort(function (p, q) {
-                    if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
-                    if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
-                    return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
-                });
+                // add distance decorators and sort by distance from me; note the wrapped nature here
+                _this2.updateGeolocationResultsList()();
 
+                // center the map on our own location
+                _this2.resultsmap.setCenter({ lat: _this2.geolocation[0], lng: _this2.geolocation[1] });
+
+                // we have now performed a search; results or no, it's done
                 _this2.search.done = true;
             }, function (error) {
                 _this2.busy = false;
                 alert("Could not connect to the site. Check your connection and try again.");
             });
+        }
+    }, {
+        key: 'updateGeolocationMapmarker',
+        value: function updateGeolocationMapmarker() {
+            var _this3 = this;
+
+            // wrapped function for use with $watch
+            return function () {
+                // update the You Are Here map marker and recenter
+                console.log('updateGeolocationMapmarker');
+                if (_this3.resultsmap) {
+                    _this3.resultsmap.youarehere.setPosition({ lat: _this3.geolocation[0], lng: _this3.geolocation[1] });
+                    _this3.resultsmap.youarehere.setMap(_this3.resultsmap);
+                }
+            };
+        }
+    }, {
+        key: 'updateGeolocationResultsList',
+        value: function updateGeolocationResultsList() {
+            var _this4 = this;
+
+            // wrapped function for use with $watch
+            return function () {
+                console.log('updateGeolocationResultsList');
+                // tag each result with its distance from my geolocation
+                // then sort the list so closest locations come first
+                _this4.search.results.forEach(function (item) {
+                    item.DistanceMiles = item.LatLng && _this4.geolocation ? haversineDistance(_this4.geolocation, item.LatLng) : null;
+                });
+
+                _this4.search.results.sort(function (p, q) {
+                    if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
+                    if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
+                    return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+                });
+            };
         }
     }, {
         key: 'searchBack',
@@ -308,7 +400,7 @@ var PageController = function () {
     return PageController;
 }();
 
-PageController.$inject = ['$scope', '$http'];
+PageController.$inject = ['$scope', '$http', '$window', '$timeout'];
 
 angular.module('app', ['checklist-model', 'ui.bootstrap']).controller('PageController', PageController);
 

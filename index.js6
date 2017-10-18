@@ -74,7 +74,7 @@ const SERVICES_OFFERED = [
 // the controller class and then launch
 class PageController {
     // match this argument list to the $inject list provided below... or weird things will happen
-    constructor($scope, $http) {
+    constructor($scope, $http, $window, $timeout) {
         // injections we want to pass into other methods (sigh)
         this.$http = $http;
         this.$scope = $scope;
@@ -104,10 +104,12 @@ class PageController {
 
         // start watching our location: null for unknown, or [ lat, lng ]
         // we use this to update a marker on the map, and to sort the list by what's closest
-        this.geolocation = null;
+        this.geolocation = [ 0, 0 ];
         navigator.geolocation.watchPosition(
             (position) => {
-                this.geolocation = [ parseFloat(position.coords.latitude), parseFloat(position.coords.longitude) ];
+                $scope.$evalAsync(() => {
+                    this.geolocation = [ parseFloat(position.coords.latitude), parseFloat(position.coords.longitude) ];
+                });
             },
             (error) => {
               console.warn(`Geolocation: ${err.message}`);
@@ -116,6 +118,53 @@ class PageController {
                 enableHighAccuracy: true,
             }
         );
+
+        $scope.$watchCollection(() => this.geolocation, this.updateGeolocationResultsList(), true);
+        $scope.$watchCollection(() => this.geolocation, this.updateGeolocationMapmarker(), true);
+
+        // start the map
+        this.resultsmap = new google.maps.Map(document.getElementById('resultsmap'), {
+            center: new google.maps.LatLng(0, 0),
+            zoom: 16,
+            mapTypeId: google.maps.MapTypeId.TERRAIN,
+            scrollwheel: false,
+            fullscreenControl: false,
+            streetViewControl: false,
+            mapTypeControlOptions: {
+                position: google.maps.ControlPosition.TOP_RIGHT,
+                mapTypeIds: [google.maps.MapTypeId.TERRAIN, google.maps.MapTypeId.HYBRID ]
+            }
+        });
+
+        this.resultsmap.youarehere = new google.maps.Marker({
+            position: { lat: 0, lng: 0 },
+            title: "You Are Here",
+            icon: '/images/youarehere.gif',
+        });
+
+        google.maps.event.addListenerOnce(this.resultsmap, 'idle', function() {
+            this.mapTypes[google.maps.MapTypeId.HYBRID].name = 'Photo'; // hack to rename the layer's name in the control
+        });
+
+        // add map workarounds: they hate being invisible and malfunction strangely
+        // tell GMap that its size has changed (even though it has not)
+        angular.element($window).on('resize', () => {
+            if (! this.showmap) return;
+
+            $timeout(() => {
+                google.maps.event.trigger(this.resultsmap, 'resize');
+
+                if (this.geolocation) {
+                    this.resultsmap.setCenter({ lat: this.geolocation[0], lng: this.geolocation[1] });
+                }
+            }, 100);
+        });
+
+        $scope.$watch(() => this.showmap, () => {
+            if (this.showmap) {
+                angular.element($window).triggerHandler('resize');
+            }
+        });
     }
 
     openDatePicker () {
@@ -189,18 +238,19 @@ class PageController {
                     item.fields.AgencyName  = item.fields.AgencyName[0];
                     item.fields.LatLng      = item.fields.lat && item.fields.lng ? [ parseFloat(item.fields.lat[0]), parseFloat(item.fields.lng[0]) ] : null; // can be empty!
 
-                    // new synthetic field: DistanceMiles from your location
-                    item.fields.DistanceMiles = item.fields.LatLng ? haversineDistance(this.geolocation, item.fields.LatLng) : null;
+                    // new synthetic field: DistanceMiles from your location; to be filled in afterward, declared here for clarity + documentation
+                    item.fields.DistanceMiles = null;
 
                     return item.fields;
                 });
 
-                this.search.results.sort((p, q) => {
-                    if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
-                    if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
-                    return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
-                });
+                // add distance decorators and sort by distance from me; note the wrapped nature here
+                this.updateGeolocationResultsList()();
 
+                // center the map on our own location
+                this.resultsmap.setCenter({ lat: this.geolocation[0], lng: this.geolocation[1] });
+
+                // we have now performed a search; results or no, it's done
                 this.search.done = true;
             },
             (error) => {
@@ -208,6 +258,36 @@ class PageController {
                 alert("Could not connect to the site. Check your connection and try again.");
             }
         );
+    }
+
+    updateGeolocationMapmarker () {
+        // wrapped function for use with $watch
+        return () => {
+            // update the You Are Here map marker and recenter
+            console.log('updateGeolocationMapmarker');
+            if (this.resultsmap) {
+                this.resultsmap.youarehere.setPosition({ lat: this.geolocation[0], lng: this.geolocation[1] });
+                this.resultsmap.youarehere.setMap(this.resultsmap);
+            }
+        };
+    }
+
+    updateGeolocationResultsList () {
+        // wrapped function for use with $watch
+        return () => {
+            console.log('updateGeolocationResultsList');
+            // tag each result with its distance from my geolocation
+            // then sort the list so closest locations come first
+            this.search.results.forEach(item => {
+                item.DistanceMiles = (item.LatLng && this.geolocation) ? haversineDistance(this.geolocation, item.LatLng) : null;
+            });
+
+            this.search.results.sort((p, q) => {
+                if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
+                if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
+                return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+            });
+        };
     }
 
     searchBack () {
@@ -222,7 +302,7 @@ class PageController {
     }
 }
 
-PageController.$inject = [ '$scope', '$http' ];
+PageController.$inject = [ '$scope', '$http', '$window', '$timeout' ];
 
 angular.module('app', [
     'checklist-model',
