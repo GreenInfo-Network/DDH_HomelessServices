@@ -108,13 +108,24 @@ Date.prototype.YMD = function () {
     return y + '-' + (m >= 10 ? m : '0' + m) + '-' + d;
 };
 
+// map JS Date weekday (0-6, 0=Sunday) to match our table values (Sun, Wed, Fri, etc)
+var WEEKDAYS_LOOKUP = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 // API key for Airtable
 // USE A READ-ONLY USER because this could become visible to anyone who views the source
 var AIRTABLE_API_KEY = "keymXIGCYEoPy4vib";
 
+// the URL of the table
+// which includes the account hash and URL-encoded table name
+var AIRTABLE_SEARCH_URL = "https://api.airtable.com/v0/appv6KlqHiaOSlrcQ/All%20Services";
+
 // the list of services offered for selection
 // this MUST match the domain values in the Airtable
-var SERVICES_OFFERED = ["Case Management", "Clothing/Blankets/Sleeping Bags", "Computer Access", "Drop In", "Food", "Health Care", "Housing", "Hygiene", "Legal", "Mail", "Mental Health", "Phone", "Referrals", "Restroom", "Services Offered", "Substance Abuse"];
+// DANGER! Airtable uses substring matching so one could get false matches,
+// e.g. Health and Mental Health would both match "Health", and there would be no way to fetch only Health records (maybe some postprocessing?)
+// so just don't do it! use distinct-enough values that substrings won't match
+// sorry but that's the degree of Airtable's support for multiple-choice values
+var SERVICES_OFFERED = ["Case Management", "Clothing/Blankets/Sleeping Bags", "Computer Access", "Drop In", "Food", "Health Care", "Housing", "Hygiene", "Legal", "Mail", "Mental Health", "Phone", "Referrals", "Restroom", "Substance Abuse"];
 
 // the controller class and then launch
 
@@ -135,16 +146,17 @@ var PageController = function () {
         this.tomorrow.setDate(this.tomorrow.getDate() + 1);
 
         // initial search-and-results state
-        this.results = [];
         this.search = {
             // search params: date and services
             services: [],
             date: null,
-            // metadata: are we busy? have we in fact run?
-            busy: false,
+            // search results and having in fact ever performed a search
+            results: [],
             done: false
         };
-        this.showmap = false;
+        // application state stuff
+        this.busy = false; // are we busy?
+        this.showmap = false; // should we be showing results the map? if not, then the list
 
         // assign some constants into scope so we can use them to build the UI
         this.services_list = SERVICES_OFFERED;
@@ -182,19 +194,61 @@ var PageController = function () {
     }, {
         key: 'performSearch',
         value: function performSearch() {
+            var _this = this;
+
             // check required
             if (!this.search.services.length) return alert("Select the help you are trying to find.");
             if (!this.search.date) return alert("Select a date.");
 
-            console.log([this.search.date.YMD(), this.today.YMD(), this.tomorrow.YMD()]);
+            // compose the filter formula
+            // the syntax is weird, and the documentation is quite poor, but here's a start...
+            // https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference
+            // super brief overviews of some gotchas:
+            // * syntax for a giant and is: AND( clause1, clause2, clause3, ...)
+            // * field names with spaces should be wrapped in {}
+            // * there is no IN operator for arrays, just substring matching; see the note in SERVICES_OFFERED about overlapping substrings
+            var formula = [];
 
-            // compose params
+            var weekday = WEEKDAYS_LOOKUP[this.search.date.getDay()];
+            formula.push('FIND("' + weekday + '", Day) > 0');
+
+            this.search.services.forEach(function (wanted) {
+                formula.push('FIND("' + wanted + '", {Services Offered}) > 0');
+            });
+
+            formula = 'AND(' + formula.join(", ") + ')';
+
+            // compose the query and send it off
             var params = {
-                services: this.search.services.join(","),
-                date: this.search.date.toISOString().substr(0, 10)
+                filterByFormula: formula
             };
-            console.log(this.search);
-            console.log(params);
+
+            this.busy = true;
+            this.$http({
+                method: 'GET',
+                url: AIRTABLE_SEARCH_URL,
+                params: params,
+                headers: {
+                    "Authorization": 'Bearer ' + AIRTABLE_API_KEY
+                }
+            }).then(function (response) {
+                _this.busy = false;
+                _this.search.results = response.data.records.map(function (item) {
+                    return item.fields;
+                });
+                _this.search.done = true;
+            }, function (error) {
+                _this.busy = false;
+                alert("Could not connect to the site. Check your connection and try again.");
+            });
+        }
+    }, {
+        key: 'searchBack',
+        value: function searchBack() {
+            // empty our results and done flag so we go back to the search panel
+            // but don't modify their search parameters
+            this.search.done = false;
+            this.search.results = [];
         }
     }]);
 

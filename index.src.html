@@ -51,22 +51,26 @@
     </div>
 
     <!-- search had no results -->
-    <div ng-show="app.search.done && ! app.results.length" class="container-fluid" id="noresults">
-nothing
+    <div ng-show="app.search.done && ! app.search.results.length" class="container-fluid" id="noresults">
+        <h3>Nothing Found</h3>
+        <p>No service providers were found matching all of your needs.</p>
+        <p>Try selecting a different day. Many providers are only open Monday through Friday.</p>
+        <p>Try selecting fewer services. Few providers provide all of the services listed.</p>
+        <p><button class="btn btn-block btn-primary" ng-click="app.searchBack();"><i class="glyphicon glyphicon-chevron-left"></i> Search Again</button></p>
     </div>
 
     <!-- results listing -->
-    <div ng-show="app.search.done && app.results.length && ! app.showmap" class="container-fluid" id="resultslist">
-listing
+    <div ng-show="app.search.done && app.search.results.length && ! app.showmap" class="container-fluid" id="resultslist">
+        <p><button class="btn btn-block btn-primary" ng-click="app.searchBack();"><i class="glyphicon glyphicon-chevron-left"></i> Search Again</button></p>
     </div>
 
     <!-- results map -->
-    <div ng-show="app.search.done && app.results.length && app.showmap" class="container-fluid" id="resultsmap">
+    <div ng-show="app.search.done && app.search.results.length && app.showmap" class="container-fluid" id="resultsmap">
 map
     </div>
 
     <!-- busy spinner -->
-    <div ng-show="app.search.busy" class="container-fluid" id="busy">
+    <div ng-show="app.busy" class="container-fluid" id="busy">
         <img src="images/spinner.gif" />
     </div>
 

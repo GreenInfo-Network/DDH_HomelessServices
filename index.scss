@@ -53,14 +53,16 @@ div.uib-daypicker, div.uib-monthpicker {
  * COMPONENTS AND PANELS
  */
 
+div.container-fluid {
+    h3:first-child { /* first title on a page gets too much top margin */
+        margin-top: 0;
+    }
+}
+
 nav.navbar {
 }
 
 #searchform {
-    h3:first-child {
-        margin-top: 0;
-    }
-
     label input {
         vertical-align: top;
     }
@@ -99,10 +101,10 @@ nav.navbar {
     }
 }
 
-div#busy-spinner {
+#busy {
     width: 100%;
     height: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
 
