@@ -42,9 +42,9 @@
         </span>
 
         <h3>When?</h3>
-        <button class="btn btn-block btn-primary" ng-click="app.pickDate('today');">Today</button>
-        <button class="btn btn-block btn-primary" ng-click="app.pickDate('tomorrow');">Tomorrow</button>
-        <button class="btn btn-block btn-primary" ng-click="app.pickDate('clear'); app.pickDate('date');">Pick a Day</button>
+        <button ng-class="{ 'btn': true, 'btn-block':true, 'btn-primary': true, 'btn-success': app.search.date.YMD() == app.today.YMD() }" ng-click="app.pickDate('today');">Today</button>
+        <button ng-class="{ 'btn': true, 'btn-block':true, 'btn-primary': true, 'btn-success': app.search.date.YMD() == app.tomorrow.YMD() }" ng-click="app.pickDate('tomorrow');">Tomorrow</button>
+        <button ng-class="{ 'btn': true, 'btn-block':true, 'btn-primary': true, 'btn-success': app.search.date.YMD() >  app.tomorrow.YMD() }" ng-click="app.pickDate('clear'); app.pickDate('date');">Pick a Day</button>
 
         <br/>
         <button class="btn btn-block btn-success" ng-click="app.performSearch();"><i class="glyphicon glyphicon-search"></i> Search</button>

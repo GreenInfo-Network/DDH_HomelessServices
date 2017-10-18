@@ -100,6 +100,14 @@ __webpack_require__(1);
 // and a pinch of jQuery for date pickers
 //
 
+// JS's Date objects are weak: only way to get YYYY-MM-DD string is to use toISOFormat() which fudges the time zone...
+Date.prototype.YMD = function () {
+    var y = 1900 + this.getYear();
+    var m = 1 + this.getMonth();
+    var d = this.getDate();
+    return y + '-' + (m >= 10 ? m : '0' + m) + '-' + d;
+};
+
 // API key for Airtable
 // USE A READ-ONLY USER because this could become visible to anyone who views the source
 var AIRTABLE_API_KEY = "keymXIGCYEoPy4vib";
@@ -119,8 +127,14 @@ var PageController = function () {
         this.$http = $http;
         this.$scope = $scope;
 
+        // cache some dates used for calendar date picker and date buttons
+        // used for a minimum date allowed, as well as "is the selected date tomorrow?"
+        this.today = new Date();
+
+        this.tomorrow = new Date();
+        this.tomorrow.setDate(this.tomorrow.getDate() + 1);
+
         // initial search-and-results state
-        this.today = new Date(); // used for callenar date picker
         this.results = [];
         this.search = {
             // search params: date and services
@@ -152,11 +166,10 @@ var PageController = function () {
             // accepts a named day (today or tomorrow) or "date" to pick one
             switch (which) {
                 case 'today':
-                    this.search.date = new Date();
+                    this.search.date = this.today;
                     break;
                 case 'tomorrow':
-                    this.search.date = new Date();
-                    this.search.date.setDate(this.search.date.getDate() + 1);
+                    this.search.date = this.tomorrow;
                     break;
                 case 'date':
                     this.openDatePicker(); // has a change handler which will set search.date
@@ -169,10 +182,19 @@ var PageController = function () {
     }, {
         key: 'performSearch',
         value: function performSearch() {
+            // check required
+            if (!this.search.services.length) return alert("Select the help you are trying to find.");
+            if (!this.search.date) return alert("Select a date.");
+
+            console.log([this.search.date.YMD(), this.today.YMD(), this.tomorrow.YMD()]);
+
+            // compose params
             var params = {
+                services: this.search.services.join(","),
                 date: this.search.date.toISOString().substr(0, 10)
             };
             console.log(this.search);
+            console.log(params);
         }
     }]);
 

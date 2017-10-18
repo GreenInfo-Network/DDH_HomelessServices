@@ -20,8 +20,8 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL9z5bBfPe2FfwUmUik-xX1_unw-7PwYA"></script>
 
     <!-- local config -->
-    <link href="index.css?Tue Oct 17 2017 16:53:37 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
-    <script src="index.js?Tue Oct 17 2017 16:53:37 GMT-0700 (Pacific Daylight Time)"></script>
+    <link href="index.css?Tue Oct 17 2017 17:19:24 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
+    <script src="index.js?Tue Oct 17 2017 17:19:24 GMT-0700 (Pacific Daylight Time)"></script>
 </head>
 <body ng-app="app" ng-controller="PageController as app">
 
@@ -42,9 +42,9 @@
         </span>
 
         <h3>When?</h3>
-        <button class="btn btn-block btn-primary" ng-click="app.pickDate('today');">Today</button>
-        <button class="btn btn-block btn-primary" ng-click="app.pickDate('tomorrow');">Tomorrow</button>
-        <button class="btn btn-block btn-primary" ng-click="app.pickDate('clear'); app.pickDate('date');">Pick a Day</button>
+        <button ng-class="{ 'btn': true, 'btn-block':true, 'btn-primary': true, 'btn-success': app.search.date.YMD() == app.today.YMD() }" ng-click="app.pickDate('today');">Today</button>
+        <button ng-class="{ 'btn': true, 'btn-block':true, 'btn-primary': true, 'btn-success': app.search.date.YMD() == app.tomorrow.YMD() }" ng-click="app.pickDate('tomorrow');">Tomorrow</button>
+        <button ng-class="{ 'btn': true, 'btn-block':true, 'btn-primary': true, 'btn-success': app.search.date.YMD() >  app.tomorrow.YMD() }" ng-click="app.pickDate('clear'); app.pickDate('date');">Pick a Day</button>
 
         <br/>
         <button class="btn btn-block btn-success" ng-click="app.performSearch();"><i class="glyphicon glyphicon-search"></i> Search</button>
