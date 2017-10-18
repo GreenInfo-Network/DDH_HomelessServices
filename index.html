@@ -20,8 +20,8 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL9z5bBfPe2FfwUmUik-xX1_unw-7PwYA"></script>
 
     <!-- local config -->
-    <link href="index.css?Wed Oct 18 2017 15:59:56 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
-    <script src="index.js?Wed Oct 18 2017 15:59:56 GMT-0700 (Pacific Daylight Time)"></script>
+    <link href="index.css?Wed Oct 18 2017 16:08:42 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
+    <script src="index.js?Wed Oct 18 2017 16:08:42 GMT-0700 (Pacific Daylight Time)"></script>
 </head>
 <body ng-app="app" ng-controller="PageController as app">
 
@@ -95,10 +95,18 @@
             <div class="address">{{ app.resultdetails.Address }}</div>
 
             <div class="details">{{ app.resultdetails.Details }}</div>
+
+            <div class="contactus">
+                See an error? <a target="_blank" ng-href="{{ app.email_contact }}">Email us!</a>
+            </div>
         </div>
 
         <!-- results listing -->
         <div ng-show="! app.showmap" class="container-fluid" id="resultslist">
+            <div class="contactus">
+                See an error? <a target="_blank" ng-href="{{ app.email_contact }}">Email us!</a>
+            </div>
+
             <ul>
                 <li ng-repeat="result in app.search.results">
                     <div class="distance" ng-show="result.DistanceMiles"><a href="javascript:void(0);" ng-click="app.zoomMapToLatLng(result.LatLng, true); app.resultdetails = result;">{{ result.DistanceMiles.toFixed(1) }} miles<br/>from you</a></div>

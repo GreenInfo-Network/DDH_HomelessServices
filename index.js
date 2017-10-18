@@ -146,6 +146,9 @@ var AIRTABLE_SEARCH_URL = "https://api.airtable.com/v0/appv6KlqHiaOSlrcQ/All%20S
 // sorry but that's the degree of Airtable's support for multiple-choice values
 var SERVICES_OFFERED = ["Case Management", "Clothing/Blankets/Sleeping Bags", "Computer Access", "Drop In", "Food", "Health Care", "Housing", "Hygiene", "Legal", "Mail", "Mental Health", "Phone", "Referrals", "Restroom", "Substance Abuse"];
 
+// the URL where one may contact to report bugs; we just use a mailto link whichnwork A-OK on mobile
+var CONTACT_URL = "mailto:dan@greeninfo.org?subject=Homeless Services Map";
+
 // the controller class and then launch
 
 var PageController = function () {
@@ -182,6 +185,7 @@ var PageController = function () {
 
         // assign some constants into scope so we can use them to build the UI
         this.services_list = SERVICES_OFFERED;
+        this.email_contact = CONTACT_URL;
 
         // start watching our location: null for unknown, or [ lat, lng ]
         // we use this to update a marker on the map, and to sort the list by what's closest

@@ -47,6 +47,15 @@ div.container-fluid {
     }
 }
 
+div.contactus {
+    font-size: 15px;
+
+    a {
+        font-weight: bold;
+        text-decoration: none;
+        color: black !important;
+    }
+}
 
 /*
  * CALENDAR DATE PICKER THING
@@ -110,6 +119,10 @@ nav.navbar {
     }
 
     #resultslist {
+        .contactus {
+            margin-bottom: 10px;
+        }
+
         ul {
             list-style-type: none;
             margin-left: -2em;
@@ -163,8 +176,8 @@ nav.navbar {
 
         width: 100%;
 
-        height: 100px;
-        max-height: 100px; /* contrived to match pixel-fussing to align to bottom of map */
+        height: 120px;
+        max-height: 120px; /* contrived to match pixel-fussing to align to bottom of map */
         overflow: hidden;
 
         background-color: white;

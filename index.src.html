@@ -95,10 +95,18 @@
             <div class="address">{{ app.resultdetails.Address }}</div>
 
             <div class="details">{{ app.resultdetails.Details }}</div>
+
+            <div class="contactus">
+                See an error? <a target="_blank" ng-href="{{ app.email_contact }}">Email us!</a>
+            </div>
         </div>
 
         <!-- results listing -->
         <div ng-show="! app.showmap" class="container-fluid" id="resultslist">
+            <div class="contactus">
+                See an error? <a target="_blank" ng-href="{{ app.email_contact }}">Email us!</a>
+            </div>
+
             <ul>
                 <li ng-repeat="result in app.search.results">
                     <div class="distance" ng-show="result.DistanceMiles"><a href="javascript:void(0);" ng-click="app.zoomMapToLatLng(result.LatLng, true); app.resultdetails = result;">{{ result.DistanceMiles.toFixed(1) }} miles<br/>from you</a></div>
