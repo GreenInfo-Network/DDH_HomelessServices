@@ -151,7 +151,23 @@ nav.navbar {
     }
 
     #resultsmap {
-        height: calc(100vh - 100px);
+        height: calc(100vh - 150px);
+        min-height: 300px;
+
+        div.popup {
+            h3 {
+                font-size: 14px;
+            }
+            div {
+                font-size: 12px;
+            }
+            div.address {
+            }
+            div.details {
+                font-size: 11px;
+                margin-top: 5px;
+            }
+        }
     }
 }
 

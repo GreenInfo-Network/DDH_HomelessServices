@@ -216,15 +216,21 @@ var PageController = function () {
             }
         });
 
+        google.maps.event.addListenerOnce(this.resultsmap, 'idle', function () {
+            this.mapTypes[google.maps.MapTypeId.HYBRID].name = 'Photo'; // hack to rename the layer's name in the control
+        });
+
         this.resultsmap.youarehere = new google.maps.Marker({
             position: { lat: 0, lng: 0 },
             title: "You Are Here",
             icon: '/images/youarehere.gif'
         });
 
-        google.maps.event.addListenerOnce(this.resultsmap, 'idle', function () {
-            this.mapTypes[google.maps.MapTypeId.HYBRID].name = 'Photo'; // hack to rename the layer's name in the control
-        });
+        this.resultsmap.infowindow = new google.maps.InfoWindow();
+        this.resultsmap.locations = [];
+        $scope.$watch(function () {
+            return _this.search.results;
+        }, this.redrawLocationMarkers(), true);
 
         // add map workarounds: they hate being invisible and malfunction strangely
         // tell GMap that its size has changed (even though it has not)
@@ -338,6 +344,7 @@ var PageController = function () {
 
                 // center the map on our own location
                 _this2.resultsmap.setCenter({ lat: _this2.geolocation[0], lng: _this2.geolocation[1] });
+                _this2.resultsmap.setZoom(14);
 
                 // we have now performed a search; results or no, it's done
                 _this2.search.done = true;
@@ -354,7 +361,6 @@ var PageController = function () {
             // wrapped function for use with $watch
             return function () {
                 // update the You Are Here map marker and recenter
-                console.log('updateGeolocationMapmarker');
                 if (_this3.resultsmap) {
                     _this3.resultsmap.youarehere.setPosition({ lat: _this3.geolocation[0], lng: _this3.geolocation[1] });
                     _this3.resultsmap.youarehere.setMap(_this3.resultsmap);
@@ -368,7 +374,6 @@ var PageController = function () {
 
             // wrapped function for use with $watch
             return function () {
-                console.log('updateGeolocationResultsList');
                 // tag each result with its distance from my geolocation
                 // then sort the list so closest locations come first
                 _this4.search.results.forEach(function (item) {
@@ -379,6 +384,44 @@ var PageController = function () {
                     if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
                     if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
                     return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+                });
+            };
+        }
+    }, {
+        key: 'redrawLocationMarkers',
+        value: function redrawLocationMarkers() {
+            var _this5 = this;
+
+            // wrapped function for use with $watch
+            return function () {
+                // empty current markers
+                _this5.resultsmap.locations.forEach(function (marker) {
+                    marker.setMap(null);
+                });
+                _this5.resultsmap.locations = [];
+
+                // load the new ones
+                _this5.search.results.forEach(function (item) {
+                    if (!item.LatLng) return; // some lack a location
+
+                    var marker = new google.maps.Marker({
+                        position: { lat: item.LatLng[0], lng: item.LatLng[1] },
+                        title: item.AgencyName
+                    });
+
+                    var html = '<div class="popup">';
+                    html += '<h3>' + item.AgencyName + '</h3>';
+                    if (item.Address) html += '<div class="address">' + item.Address + '</div>';
+                    if (item.Details) html += '<div class="details">' + item.Details + '</div>';
+                    html += '</div>';
+
+                    google.maps.event.addListener(marker, 'click', function () {
+                        this.map.infowindow.setContent(html);
+                        this.map.infowindow.open(this.resultsmap, marker);
+                    });
+
+                    _this5.resultsmap.locations.push(marker);
+                    marker.setMap(_this5.resultsmap);
                 });
             };
         }

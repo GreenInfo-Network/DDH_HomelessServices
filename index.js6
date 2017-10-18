@@ -136,15 +136,19 @@ class PageController {
             }
         });
 
+        google.maps.event.addListenerOnce(this.resultsmap, 'idle', function() {
+            this.mapTypes[google.maps.MapTypeId.HYBRID].name = 'Photo'; // hack to rename the layer's name in the control
+        });
+
         this.resultsmap.youarehere = new google.maps.Marker({
             position: { lat: 0, lng: 0 },
             title: "You Are Here",
             icon: '/images/youarehere.gif',
         });
 
-        google.maps.event.addListenerOnce(this.resultsmap, 'idle', function() {
-            this.mapTypes[google.maps.MapTypeId.HYBRID].name = 'Photo'; // hack to rename the layer's name in the control
-        });
+        this.resultsmap.infowindow = new google.maps.InfoWindow();
+        this.resultsmap.locations = [];
+        $scope.$watch(() => this.search.results, this.redrawLocationMarkers(), true);
 
         // add map workarounds: they hate being invisible and malfunction strangely
         // tell GMap that its size has changed (even though it has not)
@@ -249,6 +253,7 @@ class PageController {
 
                 // center the map on our own location
                 this.resultsmap.setCenter({ lat: this.geolocation[0], lng: this.geolocation[1] });
+                this.resultsmap.setZoom(14);
 
                 // we have now performed a search; results or no, it's done
                 this.search.done = true;
@@ -264,7 +269,6 @@ class PageController {
         // wrapped function for use with $watch
         return () => {
             // update the You Are Here map marker and recenter
-            console.log('updateGeolocationMapmarker');
             if (this.resultsmap) {
                 this.resultsmap.youarehere.setPosition({ lat: this.geolocation[0], lng: this.geolocation[1] });
                 this.resultsmap.youarehere.setMap(this.resultsmap);
@@ -275,7 +279,6 @@ class PageController {
     updateGeolocationResultsList () {
         // wrapped function for use with $watch
         return () => {
-            console.log('updateGeolocationResultsList');
             // tag each result with its distance from my geolocation
             // then sort the list so closest locations come first
             this.search.results.forEach(item => {
@@ -286,6 +289,41 @@ class PageController {
                 if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
                 if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
                 return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+            });
+        };
+    }
+
+    redrawLocationMarkers () {
+        // wrapped function for use with $watch
+        return () => {
+            // empty current markers
+            this.resultsmap.locations.forEach(marker => {
+                marker.setMap(null);
+            });
+            this.resultsmap.locations = [];
+
+            // load the new ones
+            this.search.results.forEach(item => {
+                if (! item.LatLng) return; // some lack a location
+
+                const marker = new google.maps.Marker({
+                    position: { lat: item.LatLng[0], lng: item.LatLng[1] },
+                    title: item.AgencyName,
+                });
+
+                let html = `<div class="popup">`;
+                html += `<h3>${item.AgencyName}</h3>`;
+                if (item.Address) html += `<div class="address">${item.Address}</div>`;
+                if (item.Details) html += `<div class="details">${item.Details}</div>`;
+                html += `</div>`;
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    this.map.infowindow.setContent(html);
+                    this.map.infowindow.open(this.resultsmap, marker);
+                });
+
+                this.resultsmap.locations.push(marker);
+                marker.setMap(this.resultsmap);
             });
         };
     }
