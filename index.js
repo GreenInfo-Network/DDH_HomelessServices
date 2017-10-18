@@ -211,6 +211,9 @@ var PageController = function () {
             scrollwheel: false,
             fullscreenControl: false,
             streetViewControl: false,
+            zoomControlOptions: {
+                position: google.maps.ControlPosition.TOP_RIGHT
+            },
             mapTypeControlOptions: {
                 position: google.maps.ControlPosition.TOP_RIGHT,
                 mapTypeIds: [google.maps.MapTypeId.TERRAIN, google.maps.MapTypeId.HYBRID]
@@ -227,7 +230,6 @@ var PageController = function () {
             icon: 'images/youarehere.gif'
         });
 
-        this.resultsmap.infowindow = new google.maps.InfoWindow();
         this.resultsmap.locations = [];
         $scope.$watch(function () {
             return _this.search.results;
@@ -258,6 +260,21 @@ var PageController = function () {
                 angular.element($window).triggerHandler('resize');
             }
         });
+
+        // watch the resultdetails to see if we are opening the panel
+        // client wants it contrived to match to the bottom-left of the Google Map
+        angular.element($window).on('resize', function () {
+            if (!_this.showmap) return;
+            _this.fixDetailPanelPosition();
+        });
+        $scope.$watch(function () {
+            return _this.resultdetails;
+        }, function () {
+            if (!_this.showmap) return;
+            $timeout(function () {
+                _this.fixDetailPanelPosition();
+            }, 100);
+        }, true);
     }
 
     _createClass(PageController, [{
@@ -415,23 +432,18 @@ var PageController = function () {
 
                     var marker = new google.maps.Marker({
                         position: { lat: item.LatLng[0], lng: item.LatLng[1] },
-                        title: item.AgencyName
-                    });
-
-                    var html = '<div class="popup">';
-                    if (item.StartTime && item.EndTime) html += '<div class="time">' + item.StartTime + ' - ' + item.EndTime + '</div>';
-                    if (item.AgencyName) html += '<div class="name">' + item.AgencyName + '</div>';
-                    if (item.Address) html += '<div class="address">' + item.Address + '</div>';
-                    if (item.Details) html += '<div class="details">' + item.Details + '</div>';
-                    html += '</div>';
-
-                    google.maps.event.addListener(marker, 'click', function () {
-                        this.map.infowindow.setContent(html);
-                        this.map.infowindow.open(this.resultsmap, marker);
+                        title: item.AgencyName,
+                        map: _this5.resultsmap,
+                        details: item // the raw attribute details
                     });
 
                     _this5.resultsmap.locations.push(marker);
-                    marker.setMap(_this5.resultsmap);
+
+                    google.maps.event.addListener(marker, 'click', function () {
+                        _this5.$scope.$evalAsync(function () {
+                            _this5.resultdetails = marker.details;
+                        });
+                    });
                 });
             };
         }
@@ -465,6 +477,15 @@ var PageController = function () {
             } else {
                 doit();
             }
+        }
+    }, {
+        key: 'fixDetailPanelPosition',
+        value: function fixDetailPanelPosition() {
+            var mapdiv = angular.element($('#resultsmap'))[0];
+            var top = mapdiv.offsetTop + mapdiv.offsetHeight - 100; // fixed number = height of the DIV in CSS, so bottom matches bottom
+            var left = mapdiv.offsetLeft; // no idea why the extra 10 is needed
+            var width = mapdiv.offsetWidth;
+            this.resultdetails_position = { top: top + 'px', left: left + 'px', width: width + 'px' };
         }
     }]);
 
