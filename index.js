@@ -223,7 +223,7 @@ var PageController = function () {
         this.resultsmap.youarehere = new google.maps.Marker({
             position: { lat: 0, lng: 0 },
             title: "You Are Here",
-            icon: '/images/youarehere.gif'
+            icon: 'images/youarehere.gif'
         });
 
         this.resultsmap.infowindow = new google.maps.InfoWindow();
