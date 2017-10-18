@@ -76,8 +76,9 @@ class PageController {
     // match this argument list to the $inject list provided below... or weird things will happen
     constructor($scope, $http, $window, $timeout) {
         // injections we want to pass into other methods (sigh)
-        this.$http = $http;
         this.$scope = $scope;
+        this.$http = $http;
+        this.$timeout = $timeout;
 
         // cache some dates used for calendar date picker and date buttons
         // used for a minimum date allowed, as well as "is the selected date tomorrow?"
@@ -150,6 +151,13 @@ class PageController {
         this.resultsmap.locations = [];
         $scope.$watch(() => this.search.results, this.redrawLocationMarkers(), true);
 
+        // map custom controls: zoom to my location, zoom to region, Mapbox + OSM credits
+        function makeCustomControl(controlDiv, map) {}
+
+        var controlDiv1 = document.getElementById('GeolocationControl');
+        var newControl1 = new makeCustomControl(controlDiv1, this.map);
+        this.resultsmap.controls[google.maps.ControlPosition.RIGHT_TOP].push(controlDiv1);
+
         // add map workarounds: they hate being invisible and malfunction strangely
         // tell GMap that its size has changed (even though it has not)
         angular.element($window).on('resize', () => {
@@ -157,10 +165,7 @@ class PageController {
 
             $timeout(() => {
                 google.maps.event.trigger(this.resultsmap, 'resize');
-
-                if (this.geolocation) {
-                    this.resultsmap.setCenter({ lat: this.geolocation[0], lng: this.geolocation[1] });
-                }
+                this.resultsmap.setCenter( this.resultsmap.getCenter() );
             }, 100);
         });
 
@@ -340,8 +345,24 @@ class PageController {
         this.search.results = [];
     }
 
-    zoomMapToLatLng () {
-        alert('not yet');
+    zoomMapToGeolocation () {
+        if (! this.geolocation) return alert("Still searching for location.");
+        this.zoomMapToLatLng(this.geolocation);
+    }
+
+    zoomMapToLatLng (latlng, switchtomap) {
+        const doit = () => {
+            this.resultsmap.setCenter({ lat: latlng[0], lng: latlng[1] });
+            this.resultsmap.setZoom(16);
+        };
+
+        if (switchtomap && ! this.showmap) {
+            this.showmap = true;
+            this.$timeout(doit, 500);
+        }
+        else {
+            doit();
+        }
     }
 }
 

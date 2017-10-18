@@ -20,8 +20,8 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL9z5bBfPe2FfwUmUik-xX1_unw-7PwYA"></script>
 
     <!-- local config -->
-    <link href="index.css?Wed Oct 18 2017 14:40:49 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
-    <script src="index.js?Wed Oct 18 2017 14:40:49 GMT-0700 (Pacific Daylight Time)"></script>
+    <link href="index.css?Wed Oct 18 2017 15:02:16 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
+    <script src="index.js?Wed Oct 18 2017 15:02:16 GMT-0700 (Pacific Daylight Time)"></script>
 </head>
 <body ng-app="app" ng-controller="PageController as app">
 
@@ -76,14 +76,18 @@
         </div>
 
         <!-- results map; see Google Maps setup -->
+        <!-- the control DIVs will be turned into true GMaps controls in code, and removed from this section of the DOM -->
         <div ng-show="app.showmap" class="container-fluid" id="resultsmap">
+        </div>
+        <div id="GeolocationControl" class="map-control map-control-button" title="Show your location">
+            <div ng-click="alert('yay');"><a href="javascript:void(0);" ng-click="app.zoomMapToGeolocation();"><i class="glyphicon glyphicon-map-marker"></i></a></div>
         </div>
 
         <!-- results listing -->
         <div ng-show="! app.showmap" class="container-fluid" id="resultslist">
             <ul>
                 <li ng-repeat="result in app.search.results">
-                    <div class="distance" ng-show="result.DistanceMiles"><a href="javascript:void(0);" ng-click="app.zoomMapToLatLng(result.LatLng);">{{ result.DistanceMiles.toFixed(1) }} miles<br/>from you</a></div>
+                    <div class="distance" ng-show="result.DistanceMiles"><a href="javascript:void(0);" ng-click="app.zoomMapToLatLng(result.LatLng, true);">{{ result.DistanceMiles.toFixed(1) }} miles<br/>from you</a></div>
 
                     <div class="times" ng-show="result.StartTime && result.EndTime">{{ result.StartTime }} - {{ result.EndTime }}</div>
                     <div class="times" ng-show="result.StartTime && ! result.EndTime">Starting at {{ result.StartTime }}</div>
