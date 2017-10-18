@@ -26,8 +26,16 @@ label {
 }
 
 /*
- * HEADER HACKS
+ * GENERAL PAGE WIDTH AND NAVBAR AND TITLES
  */
+
+div.container-fluid {
+    max-width: 768px; /* this is mobile-first, but looks goofy at desktop widths */
+
+    h3:first-child { /* first title on a page gets too much top margin */
+        margin-top: 0;
+    }
+}
 
 .navbar-header a.logoimage {
     float: right;
@@ -67,12 +75,6 @@ div.uib-daypicker, div.uib-monthpicker {
 /*
  * COMPONENTS AND PANELS
  */
-
-div.container-fluid {
-    h3:first-child { /* first title on a page gets too much top margin */
-        margin-top: 0;
-    }
-}
 
 nav.navbar {
 }
