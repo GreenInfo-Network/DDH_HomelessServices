@@ -60,18 +60,44 @@
         <p><button class="btn btn-block btn-primary" ng-click="app.searchBack();"><i class="glyphicon glyphicon-chevron-left"></i> Search Again</button></p>
     </div>
 
-    <!-- results listing -->
-    <div ng-show="app.search.done && app.search.results.length && ! app.showmap" class="container-fluid" id="resultslist">
-        <p><button class="btn btn-block btn-primary" ng-click="app.searchBack();"><i class="glyphicon glyphicon-chevron-left"></i> Search Again</button></p>
-    </div>
+    <!-- results listing / results map -->
+    <div ng-show="app.search.done && app.search.results.length" id="results">
+        <div class="container-fluid" id="results-navbar">
+            <div class="row">
+                <div class="col-xs-6">
+                    <a href="javascript:void(0);" ng-click="app.searchBack();" class="backbutton"><i class="glyphicon glyphicon-chevron-left"></i> Search Again</a>
+                </div>
+                <div class="col-xs-6 right">
+                    <a href="javascript:void(0);" ng-click="app.showmap = true;" ng-class="{ 'active': app.showmap }">Map</a>
+                    &nbsp;
+                    <a href="javascript:void(0);" ng-click="app.showmap = false;" ng-class="{ 'active': ! app.showmap }">List</a>
+                </div>
+            </div>
+        </div>
 
-    <!-- results map -->
-    <div ng-show="app.search.done && app.search.results.length && app.showmap" class="container-fluid" id="resultsmap">
-map
+        <!-- results map -->
+        <div ng-show="app.showmap" class="container-fluid" id="resultsmap">
+            map
+        </div>
+
+        <!-- results listing -->
+        <div ng-show="! app.showmap" class="container-fluid" id="resultslist">
+            <ul>
+                <li ng-repeat="result in app.search.results">
+                    <div class="times" ng-show="result['Start Hour'] && result['End Hour']">{{ result['Start Hour'] }}:{{ result['Start Minute'] }} {{ result['Start AM-PM'] }} - {{ result['End Hour'] }}:{{ result['End Minute'] }} {{ result['End AM-PM'] }}</div>
+                    <div class="times" ng-show="! result['Start Hour'] || ! result['End Hour']">All Day</div>
+
+                    <div class="name indent">{{ result.AgencyName[0] }}</div>
+                    <div class="address indent">{{ result.Address[0] }}</div>
+
+                    <div class="details indent" ng-show="result.Details">{{ result.Details }}</div>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <!-- busy spinner -->
-    <div ng-show="app.busy" class="container-fluid" id="busy">
+    <div ng-show="app.busy" id="busy">
         <img src="images/spinner.gif" />
     </div>
 

@@ -88,10 +88,56 @@ nav.navbar {
 #noresults {
 }
 
-#resultslist {
-}
+#results {
+    #results-navbar {
+        margin-bottom: 10px;
 
-#resultsmap {
+        a {
+            text-decoration: none;
+            color: black !important;
+            font-size: 15px;
+
+            padding: 5px;
+            border-radius:5px;
+        }
+        a.active {
+            font-weight: bold;
+            background-color: silver;
+        }
+        a.backbutton {
+            font-weight: bold;
+        }
+    }
+
+    #resultslist {
+        ul {
+            list-style-type: none;
+            margin-left: -2em;
+
+            li {
+                font-size: 12px;
+                margin-bottom: 1em;
+
+                div.indent {
+                    padding-left: 20px;
+                }
+
+                div.times {
+                }
+                div.name {
+                }
+                div.address {
+                }
+                div.details {
+                    font-size: 11px;
+                    margin-top: 5px;
+                }
+            }
+        }
+    }
+
+    #resultsmap {
+    }
 }
 
 #footer {
