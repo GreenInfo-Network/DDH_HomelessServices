@@ -155,17 +155,18 @@ nav.navbar {
         min-height: 300px;
 
         div.popup {
-            h3 {
-                font-size: 14px;
-            }
             div {
                 font-size: 12px;
+                margin-bottom: 5px;
+            }
+            div.name {
             }
             div.address {
             }
+            div.times {
+            }
             div.details {
                 font-size: 11px;
-                margin-top: 5px;
             }
         }
     }

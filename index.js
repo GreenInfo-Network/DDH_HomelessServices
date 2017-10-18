@@ -336,6 +336,10 @@ var PageController = function () {
                     // new synthetic field: DistanceMiles from your location; to be filled in afterward, declared here for clarity + documentation
                     item.fields.DistanceMiles = null;
 
+                    // new synthetic field: Start and End times, prettier version for rendering
+                    item.fields.StartTime = item.fields['Start Hour'] ? (item.fields['Start Hour'] >= '10' ? item.fields['Start Hour'] : item.fields['Start Hour'].substr(1)) + ':' + item.fields['Start Minute'] + ' ' + item.fields['Start AM-PM'] : '';
+                    item.fields.EndTime = item.fields['End Hour'] ? (item.fields['End Hour'] >= '10' ? item.fields['End Hour'] : item.fields['End Hour'].substr(1)) + ':' + item.fields['End Minute'] + ' ' + item.fields['End AM-PM'] : '';
+
                     return item.fields;
                 });
 
@@ -410,7 +414,8 @@ var PageController = function () {
                     });
 
                     var html = '<div class="popup">';
-                    html += '<h3>' + item.AgencyName + '</h3>';
+                    if (item.StartTime && item.EndTime) html += '<div class="time">' + item.StartTime + ' - ' + item.EndTime + '</div>';
+                    if (item.AgencyName) html += '<div class="name">' + item.AgencyName + '</div>';
                     if (item.Address) html += '<div class="address">' + item.Address + '</div>';
                     if (item.Details) html += '<div class="details">' + item.Details + '</div>';
                     html += '</div>';
