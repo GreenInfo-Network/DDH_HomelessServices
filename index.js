@@ -108,6 +108,25 @@ Date.prototype.YMD = function () {
     return y + '-' + (m >= 10 ? m : '0' + m) + '-' + d;
 };
 
+// a function for calculating distance between two [lat, lng] tuples
+function haversineDistance(latlng1, latlng2) {
+    function toRad(x) {
+        return x * Math.PI / 180;
+    }
+
+    var dLat = toRad(latlng2[0] - latlng1[0]);
+    var dLon = toRad(latlng2[1] - latlng1[1]);
+    var lat1 = toRad(latlng1[0]);
+    var lat2 = toRad(latlng2[0]);
+
+    //const R = 6371000; // meters
+    var R = 3960; // miles
+
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
 // map JS Date weekday (0-6, 0=Sunday) to match our table values (Sun, Wed, Fri, etc)
 var WEEKDAYS_LOOKUP = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -132,6 +151,8 @@ var SERVICES_OFFERED = ["Case Management", "Clothing/Blankets/Sleeping Bags", "C
 var PageController = function () {
     // match this argument list to the $inject list provided below... or weird things will happen
     function PageController($scope, $http) {
+        var _this = this;
+
         _classCallCheck(this, PageController);
 
         // injections we want to pass into other methods (sigh)
@@ -160,6 +181,17 @@ var PageController = function () {
 
         // assign some constants into scope so we can use them to build the UI
         this.services_list = SERVICES_OFFERED;
+
+        // start watching our location: null for unknown, or [ lat, lng ]
+        // we use this to update a marker on the map, and to sort the list by what's closest
+        this.geolocation = null;
+        navigator.geolocation.watchPosition(function (position) {
+            _this.geolocation = [parseFloat(position.coords.latitude), parseFloat(position.coords.longitude)];
+        }, function (error) {
+            console.warn('Geolocation: ' + err.message);
+        }, {
+            enableHighAccuracy: true
+        });
     }
 
     _createClass(PageController, [{
@@ -194,7 +226,7 @@ var PageController = function () {
     }, {
         key: 'performSearch',
         value: function performSearch() {
-            var _this = this;
+            var _this2 = this;
 
             // check required
             if (!this.search.services.length) return alert("Select the help you are trying to find.");
@@ -232,13 +264,29 @@ var PageController = function () {
                     "Authorization": 'Bearer ' + AIRTABLE_API_KEY
                 }
             }).then(function (response) {
-                _this.busy = false;
-                _this.search.results = response.data.records.map(function (item) {
+                _this2.busy = false;
+                _this2.search.results = response.data.records.map(function (item) {
+                    // extract the fields, then do some data corrections
+                    // many of the fields come out as arrays of strings, instead of single values
+                    item.fields.Address = item.fields.Address[0];
+                    item.fields.AgencyName = item.fields.AgencyName[0];
+                    item.fields.LatLng = item.fields.lat && item.fields.lng ? [parseFloat(item.fields.lat[0]), parseFloat(item.fields.lng[0])] : null; // can be empty!
+
+                    // new synthetic field: DistanceMiles from your location
+                    item.fields.DistanceMiles = item.fields.LatLng ? haversineDistance(_this2.geolocation, item.fields.LatLng) : null;
+
                     return item.fields;
                 });
-                _this.search.done = true;
+
+                _this2.search.results.sort(function (p, q) {
+                    if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
+                    if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
+                    return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+                });
+
+                _this2.search.done = true;
             }, function (error) {
-                _this.busy = false;
+                _this2.busy = false;
                 alert("Could not connect to the site. Check your connection and try again.");
             });
         }
@@ -249,6 +297,11 @@ var PageController = function () {
             // but don't modify their search parameters
             this.search.done = false;
             this.search.results = [];
+        }
+    }, {
+        key: 'zoomMapToLatLng',
+        value: function zoomMapToLatLng() {
+            alert('not yet');
         }
     }]);
 

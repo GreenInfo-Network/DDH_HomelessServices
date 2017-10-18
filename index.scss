@@ -132,6 +132,20 @@ nav.navbar {
                     font-size: 11px;
                     margin-top: 5px;
                 }
+                div.distance {
+                    float: right;
+                    border-radius: 5px;
+                    padding: 3px;
+
+                    font-size: 11px;
+                    background-color: #FAFAFA;
+                    border: 1px solid silver;
+
+                    a { /* it's only a link to make it easier to tap; we don't want it to look like one */
+                        color: black !important;
+                        text-decoration: none !important;
+                    }
+                }
             }
         }
     }
