@@ -72,7 +72,7 @@ const SERVICES_OFFERED = [
 ];
 
 // the URL where one may contact to report bugs; we just use a mailto link whichnwork A-OK on mobile
-const CONTACT_URL = "mailto:dan@greeninfo.org?subject=Homeless Services Map";
+const CONTACT_URL = "mailto:dorothydayhouse@gmail.com?subject=Feedback on eastbay.homeless-connection.org";
 
 // the controller class and then launch
 class PageController {

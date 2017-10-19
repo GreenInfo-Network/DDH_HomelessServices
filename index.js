@@ -147,7 +147,7 @@ var AIRTABLE_SEARCH_URL = "https://api.airtable.com/v0/appv6KlqHiaOSlrcQ/All%20S
 var SERVICES_OFFERED = ["Case Management", "Clothing/Blankets/Sleeping Bags", "Computer Access", "Drop In", "Food", "Health Care", "Housing", "Hygiene", "Legal", "Mail", "Mental Health", "Phone", "Referrals", "Restroom", "Substance Abuse"];
 
 // the URL where one may contact to report bugs; we just use a mailto link whichnwork A-OK on mobile
-var CONTACT_URL = "mailto:dan@greeninfo.org?subject=Homeless Services Map";
+var CONTACT_URL = "mailto:dorothydayhouse@gmail.com?subject=Feedback on eastbay.homeless-connection.org";
 
 // the controller class and then launch
 
