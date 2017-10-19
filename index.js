@@ -435,6 +435,7 @@ var PageController = function () {
                     if (!item.LatLng) return; // some lack a location
 
                     var marker = new google.maps.Marker({
+                        icon: 'images/location.svg',
                         position: { lat: item.LatLng[0], lng: item.LatLng[1] },
                         title: item.AgencyName,
                         map: _this5.resultsmap,
