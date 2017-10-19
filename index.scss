@@ -199,13 +199,20 @@ nav.navbar {
             font-size: 12px;
             margin-bottom: 5px;
         }
+        div.times {
+            margin-left: 0;
+            img {
+                height: 2em;
+            }
+        }
         div.name {
+            margin-left: calc(2em + 5px);
         }
         div.address {
-        }
-        div.times {
+            margin-left: calc(2em + 5px);
         }
         div.details {
+            margin-left: calc(2em + 5px);
             font-size: 11px;
         }
     }
