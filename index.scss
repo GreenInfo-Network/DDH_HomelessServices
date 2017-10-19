@@ -312,4 +312,10 @@ div.map-control-button {
         line-height: 28px;
         font-size: 22px;
     }
+
+    img { /* is using an image instead of glyphicon, needs some hacks */
+        width: 38px !important;
+        display: inline;
+        margin-left: -4px;
+    }
 }
