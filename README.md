@@ -1,6 +1,6 @@
 # DDH_HomelessServices
 
-http://eastbay.homeless-connection.org/ This is an alias for https://greeninfo-network.github.io/DDH_HomelessServices/ but the canonical URL is recommended due to links and URL references.
+http://eastbay.homeless-connection.org/
 
 A mobile-friendly web app for homeless folks to find shelters and services.
 
@@ -9,7 +9,17 @@ Concept document: https://xd.adobe.com/view/7bb0db8f-e55c-4827-9839-b9bf7be78244
 Service locations are hosted at Airtable: https://airtable.com/tblCsWJj89Fo3qzXF/viwBuB5lZ6j5Od1Bn
 
 
-# Documentation and Client
+## Domain Name and CNAME File
+
+The canonical URL is an alias for https://greeninfo-network.github.io/DDH_HomelessServices/
+
+The *github.io* URL should work fine, though some internal links such as the / link may act strangely.
+
+Do not delete the file **CNAME** This is an instruction to Github Pages for the custom hostname. It will not affect your local development, but is important to the domain setup working!
+
+
+
+## Documentation and Client
 
 Client: Pro-bono work for Dorothy Day House, Homeless Services
 
