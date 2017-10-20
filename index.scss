@@ -164,8 +164,7 @@ nav.navbar {
     }
 
     #resultsmap {
-        height: calc(100vh - 150px);
-        min-height: 300px;
+        height: calc(100vh - 100px);
     }
 
     #resultdetails {
@@ -176,8 +175,8 @@ nav.navbar {
 
         width: 100%;
 
-        height: 120px;
-        max-height: 120px; /* contrived to match pixel-fussing to align to bottom of map */
+        height: 110px;
+        max-height: 110px; /* contrived to match pixel-fussing to align to bottom of map */
         overflow: hidden;
 
         background-color: white;

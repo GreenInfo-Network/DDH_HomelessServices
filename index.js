@@ -221,7 +221,8 @@ var PageController = function () {
             mapTypeControlOptions: {
                 position: google.maps.ControlPosition.TOP_RIGHT,
                 mapTypeIds: [google.maps.MapTypeId.TERRAIN, google.maps.MapTypeId.HYBRID]
-            }
+            },
+            gestureHandling: "greedy"
         });
 
         google.maps.event.addListenerOnce(this.resultsmap, 'idle', function () {
@@ -487,8 +488,8 @@ var PageController = function () {
         key: 'fixDetailPanelPosition',
         value: function fixDetailPanelPosition() {
             var mapdiv = angular.element($('#resultsmap'))[0];
-            var top = mapdiv.offsetTop + mapdiv.offsetHeight - 100; // fixed number = height of the DIV in CSS, so bottom matches bottom
-            var left = mapdiv.offsetLeft; // no idea why the extra 10 is needed
+            var top = mapdiv.offsetTop + mapdiv.offsetHeight - 100; // fixed number = height of this panel in CSS, so bottom matches bottom
+            var left = mapdiv.offsetLeft;
             var width = mapdiv.offsetWidth;
             this.resultdetails_position = { top: top + 'px', left: left + 'px', width: width + 'px' };
         }
