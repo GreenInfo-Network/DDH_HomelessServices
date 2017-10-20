@@ -285,13 +285,20 @@ class PageController {
                 this.resultsmap.setZoom(14);
 
                 // we have now performed a search; results or no, it's done
+                // force them over to the listing view and scroll to the top of that listing
                 this.search.done = true;
+                this.showmap = false;
+                this.performScrollTop();
             },
             (error) => {
                 this.busy = false;
                 alert("Could not connect to the site. Check your connection and try again.");
             }
         );
+    }
+
+    performScrollTop () {
+        window.scrollTo(0, 0);
     }
 
     updateGeolocationMapmarker () {

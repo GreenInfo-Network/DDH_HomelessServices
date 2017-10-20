@@ -378,11 +378,19 @@ var PageController = function () {
                 _this2.resultsmap.setZoom(14);
 
                 // we have now performed a search; results or no, it's done
+                // force them over to the listing view and scroll to the top of that listing
                 _this2.search.done = true;
+                _this2.showmap = false;
+                _this2.performScrollTop();
             }, function (error) {
                 _this2.busy = false;
                 alert("Could not connect to the site. Check your connection and try again.");
             });
+        }
+    }, {
+        key: 'performScrollTop',
+        value: function performScrollTop() {
+            window.scrollTo(0, 0);
         }
     }, {
         key: 'updateGeolocationMapmarker',
