@@ -1,6 +1,6 @@
 # DDH_HomelessServices
 
-http://eastbay.homeless-connection.org/
+https://eastbay.homeless-connection.org/
 
 A mobile-friendly web app for homeless folks to find shelters and services.
 
