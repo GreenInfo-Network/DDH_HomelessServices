@@ -20,8 +20,8 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL9z5bBfPe2FfwUmUik-xX1_unw-7PwYA"></script>
 
     <!-- local config -->
-    <link href="index.css?Fri Oct 20 2017 10:11:13 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
-    <script src="index.js?Fri Oct 20 2017 10:11:13 GMT-0700 (Pacific Daylight Time)"></script>
+    <link href="index.css?Fri Oct 20 2017 10:38:47 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
+    <script src="index.js?Fri Oct 20 2017 10:38:47 GMT-0700 (Pacific Daylight Time)"></script>
 </head>
 <body ng-app="app" ng-controller="PageController as app">
 
@@ -91,10 +91,12 @@
             <div class="times" ng-show="app.resultdetails.StartTime && ! app.resultdetails.EndTime"><img src="images/location.svg" /> Starting at {{ app.resultdetails.StartTime }}</div>
             <div class="times" ng-show="! app.resultdetails.StartTime && app.resultdetails.EndTime"><img src="images/location.svg" /> Until {{ app.resultdetails.EndTime }}</div>
 
-            <div class="name">{{ app.resultdetails.AgencyName }}</div>
-            <div class="address">{{ app.resultdetails.Address }}</div>
+            <div class="name" ng-show="app.resultdetails.AgencyName">{{ app.resultdetails.AgencyName }}</div>
+            <div class="address" ng-show="app.resultdetails.Address">{{ app.resultdetails.Address }}</div>
 
-            <div class="details">{{ app.resultdetails.Details }}</div>
+            <div class="details" ng-show="app.resultdetails.Details && app.resultdetails_showmore">{{ app.resultdetails.Details }}</div>
+
+            <div class="services" ng-show="app.resultdetails.Services.length > 0 && app.resultdetails_showmore">Services: {{ app.resultdetails.Services.join(", ") }}</div>
 
             <div class="contactus">
                 See an error? <a target="_blank" ng-href="{{ app.email_contact }}">Email us!</a>

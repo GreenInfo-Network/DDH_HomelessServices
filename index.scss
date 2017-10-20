@@ -169,15 +169,12 @@ nav.navbar {
 
     #resultdetails {
         position: absolute; /* deep contrivances to position this to the bottom of the GMap, see fixDetailPanelPosition()  */
-        top: 0;
+        bottom: 0;
         left: 0;
         z-index: 100;
 
         width: 100%;
-
-        height: 110px;
-        max-height: 110px; /* contrived to match pixel-fussing to align to bottom of map */
-        overflow: hidden;
+        /* let the height be auto: fixDetailPanelPosition() and the panel, have intel to not show TOO much content */
 
         background-color: white;
 
@@ -195,24 +192,37 @@ nav.navbar {
         }
 
         div {
-            font-size: 12px;
-            margin-bottom: 5px;
+            font-size: 13px;
+            line-height: 20px;
         }
         div.times {
             margin-left: 0;
+            margin-bottom: 3px;
             img {
-                height: 2em;
+                height: 20px;
+                vertical-align: bottom;
             }
         }
         div.name {
-            margin-left: calc(2em + 5px);
+            margin-left: 20px;
         }
         div.address {
-            margin-left: calc(2em + 5px);
+            margin-left: 20px;
         }
         div.details {
-            margin-left: calc(2em + 5px);
-            font-size: 11px;
+            margin-left: 20px;
+            font-size: 12px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        div.services {
+            margin-left: 20px;
+            font-size: 12px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        div.contactus {
+            margin-top: 2px;
         }
     }
 }

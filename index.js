@@ -372,6 +372,7 @@ var PageController = function () {
                     item.fields.Address = item.fields.Address[0];
                     item.fields.AgencyName = item.fields.AgencyName[0];
                     item.fields.LatLng = item.fields.lat && item.fields.lng ? [parseFloat(item.fields.lat[0]), parseFloat(item.fields.lng[0])] : null; // can be empty!
+                    item.fields.Services = item.fields['Services Offered']; // rename just to be less nuisance
 
                     // new synthetic field: DistanceMiles from your location; to be filled in afterward, declared here for clarity + documentation
                     item.fields.DistanceMiles = null;
@@ -508,11 +509,18 @@ var PageController = function () {
     }, {
         key: 'fixDetailPanelPosition',
         value: function fixDetailPanelPosition() {
+            // position the panel so its bottom-left is the bottom-left of the map
+            // the bottom: 0 works because there's nothing below the map's bottom (footer suppressed) but that could change
             var mapdiv = angular.element($('#resultsmap'))[0];
-            var top = mapdiv.offsetTop + mapdiv.offsetHeight - 100; // fixed number = height of this panel in CSS, so bottom matches bottom
+            var bottom = 0; // mapdiv.offsetTop + mapdiv.offsetHeight;
             var left = mapdiv.offsetLeft;
             var width = mapdiv.offsetWidth;
-            this.resultdetails_position = { top: top + 'px', left: left + 'px', width: width + 'px' };
+            this.resultdetails_position = { bottom: bottom + 'px', left: left + 'px', width: width + 'px' };
+
+            // given our new screen height, would this panel have sufficient space to show these extra details?
+            // it's a wild guess that X pixels would fit the height of whatever arbitrary text may exist,
+            // but it's true more often than it's false
+            this.resultdetails_showmore = window.innerHeight >= 550;
         }
     }]);
 

@@ -91,10 +91,12 @@
             <div class="times" ng-show="app.resultdetails.StartTime && ! app.resultdetails.EndTime"><img src="images/location.svg" /> Starting at {{ app.resultdetails.StartTime }}</div>
             <div class="times" ng-show="! app.resultdetails.StartTime && app.resultdetails.EndTime"><img src="images/location.svg" /> Until {{ app.resultdetails.EndTime }}</div>
 
-            <div class="name">{{ app.resultdetails.AgencyName }}</div>
-            <div class="address">{{ app.resultdetails.Address }}</div>
+            <div class="name" ng-show="app.resultdetails.AgencyName">{{ app.resultdetails.AgencyName }}</div>
+            <div class="address" ng-show="app.resultdetails.Address">{{ app.resultdetails.Address }}</div>
 
-            <div class="details">{{ app.resultdetails.Details }}</div>
+            <div class="details" ng-show="app.resultdetails.Details && app.resultdetails_showmore">{{ app.resultdetails.Details }}</div>
+
+            <div class="services" ng-show="app.resultdetails.Services.length > 0 && app.resultdetails_showmore">Services: {{ app.resultdetails.Services.join(", ") }}</div>
 
             <div class="contactus">
                 See an error? <a target="_blank" ng-href="{{ app.email_contact }}">Email us!</a>
