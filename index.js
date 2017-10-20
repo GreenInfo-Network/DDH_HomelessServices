@@ -95,9 +95,16 @@ __webpack_require__(0);
 __webpack_require__(1);
 
 //
-// begin JavaScript code
-// AngularJS with a conjtroller in ES2015 class syntax
-// and a pinch of jQuery for date pickers
+// detect someone using this URL without HTTPS and redirect them to the HTTPS site
+//
+
+if (window.location.protocol == 'http:' && window.location.hostname != 'localhost') {
+    var newurl = window.location.href.replace(/^http:/, 'https:');
+    window.location.href = newurl;
+}
+
+//
+// some polyfills and extensions
 //
 
 // JS's Date objects are weak: only way to get YYYY-MM-DD string is to use toISOFormat() which fudges the time zone...
@@ -127,6 +134,10 @@ function haversineDistance(latlng1, latlng2) {
     return R * c;
 }
 
+//
+// constants
+//
+
 // map JS Date weekday (0-6, 0=Sunday) to match our table values (Sun, Wed, Fri, etc)
 var WEEKDAYS_LOOKUP = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -149,7 +160,9 @@ var SERVICES_OFFERED = ["Case Management", "Clothing/Blankets/Sleeping Bags", "C
 // the URL where one may contact to report bugs; we just use a mailto link whichnwork A-OK on mobile
 var CONTACT_URL = "mailto:dorothydayhouse@gmail.com?subject=Feedback on eastbay.homeless-connection.org";
 
-// the controller class and then launch
+//
+// AngularJS with a controller in ES2015 class syntax
+//
 
 var PageController = function () {
     // match this argument list to the $inject list provided below... or weird things will happen
