@@ -299,7 +299,8 @@ div.map-control { /* base class for map controls */
     border-radius: 3px;
 
     font-size: 22px;
-    margin: 10px;
+
+    margin: 0px 10px 0px 10px;
 
     box-shadow: 1px 1px 5px #888888;
 }
@@ -320,8 +321,8 @@ div.map-control .active i, div.map-control .active a {
 }
 
 div.map-control-button {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     text-align: center;
 
     i {
@@ -332,6 +333,6 @@ div.map-control-button {
     img { /* is using an image instead of glyphicon, needs some hacks */
         width: 38px !important;
         display: inline;
-        margin-left: -4px;
+        margin-left: -5px;
     }
 }
