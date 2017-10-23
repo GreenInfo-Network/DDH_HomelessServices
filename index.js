@@ -429,6 +429,7 @@ var PageController = function () {
             return function () {
                 // tag each result with its distance from my geolocation
                 // then sort the list so closest locations come first
+                // in event of a tie (same location, listed multiple times for different service-times) sort by starting time
                 _this4.search.results.forEach(function (item) {
                     item.DistanceMiles = item.LatLng && _this4.geolocation ? haversineDistance(_this4.geolocation, item.LatLng) : null;
                 });
@@ -436,7 +437,13 @@ var PageController = function () {
                 _this4.search.results.sort(function (p, q) {
                     if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
                     if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
-                    return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+                    if (p.DistanceMiles != q.DistanceMiles) {
+                        return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+                    }
+
+                    if (p['Start Hour'] === null) return 1; // no start time = send to start of these tied locations
+                    if (q['Start Hour'] === null) return 1; // no start time = send to start of these tied locations
+                    return '' + p['Start Hour'] + p['Start Minute'] > '' + q['Start Hour'] + q['Start Minute'] ? 1 : -1;
                 });
             };
         }
