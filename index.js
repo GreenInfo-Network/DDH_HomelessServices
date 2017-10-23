@@ -538,6 +538,16 @@ var PageController = function () {
             // but it's true more often than it's false
             this.resultdetails_showmore = window.innerHeight >= 550;
         }
+    }, {
+        key: 'makeDirectionsLink',
+        value: function makeDirectionsLink(stringwords, latlng) {
+            // try to use Apple Maps if we detect iOS; everyone else gets Google which will either open navigation, or be a good desktop site anyway
+            var url = 'https://maps.google.com/?daddr=loc:' + latlng[0] + ',' + latlng[1];
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                url = 'https://maps.apple.com/?daddr=loc:' + latlng[0] + ',' + latlng[1];
+            }
+            return '<a target="_blank" href="' + url + '">' + stringwords + '</a>';
+        }
     }]);
 
     return PageController;
@@ -545,7 +555,7 @@ var PageController = function () {
 
 PageController.$inject = ['$scope', '$http', '$window', '$timeout'];
 
-angular.module('app', ['checklist-model', 'ui.bootstrap']).controller('PageController', PageController);
+angular.module('app', ['checklist-model', 'ui.bootstrap', 'ngSanitize']).controller('PageController', PageController);
 
 /***/ })
 /******/ ]);

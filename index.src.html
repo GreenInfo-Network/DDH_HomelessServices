@@ -7,6 +7,7 @@
 
     <!-- Angular and Angular Bootstrap -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular-sanitize.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/checklist-model/0.11.0/checklist-model.min.js"></script>
 
@@ -84,7 +85,7 @@
         </div>
 
         <!-- a details panel for one selected location-feature -->
-        <div ng-show="app.showmap && app.resultdetails" id="resultdetails" ng-style="app.resultdetails_position">
+        <div ng-if="app.showmap && app.resultdetails" id="resultdetails" ng-style="app.resultdetails_position">
             <a href="javascript:void(0);" ng-click="app.resultdetails = null;"><i class="glyphicon glyphicon-remove"></i></a>
 
             <div class="times" ng-show="app.resultdetails.StartTime && app.resultdetails.EndTime"><img src="images/location.svg" /> {{ app.resultdetails.StartTime }} - {{ app.resultdetails.EndTime }}</div>
@@ -92,7 +93,7 @@
             <div class="times" ng-show="! app.resultdetails.StartTime && app.resultdetails.EndTime"><img src="images/location.svg" /> Until {{ app.resultdetails.EndTime }}</div>
 
             <div class="name" ng-show="app.resultdetails.AgencyName">{{ app.resultdetails.AgencyName }}</div>
-            <div class="address" ng-show="app.resultdetails.Address">{{ app.resultdetails.Address }}</div>
+            <div class="address" ng-show="app.resultdetails.Address" ng-bind-html="app.makeDirectionsLink(app.resultdetails.Address, app.resultdetails.LatLng)" title="Get directions"></div>
 
             <div class="details" ng-show="app.resultdetails.Details && app.resultdetails_showmore">{{ app.resultdetails.Details }}</div>
 
