@@ -83,9 +83,7 @@
         <div id="GeolocationControl" class="map-control map-control-button map-control-button-geolocation" title="Show your location">
             <a href="javascript:void(0);" ng-click="app.zoomMapToGeolocation();"><img src="images/youarehere.svg" /></a>
         </div>
-
-        <!-- a details panel for one selected location-feature -->
-        <div ng-if="app.showmap && app.resultdetails" id="resultdetails" ng-style="app.resultdetails_position">
+        <div id="DetailsControl" class="map-control map-control-text map-control-text-details" ng-show="app.showmap && app.resultdetails">
             <a href="javascript:void(0);" ng-click="app.resultdetails = null;"><i class="glyphicon glyphicon-remove"></i></a>
 
             <div class="times" ng-show="app.resultdetails.StartTime && app.resultdetails.EndTime"><img src="images/location.svg" /> {{ app.resultdetails.StartTime }} - {{ app.resultdetails.EndTime }}</div>
@@ -93,15 +91,13 @@
             <div class="times" ng-show="! app.resultdetails.StartTime && app.resultdetails.EndTime"><img src="images/location.svg" /> Until {{ app.resultdetails.EndTime }}</div>
 
             <div class="name" ng-show="app.resultdetails.AgencyName">{{ app.resultdetails.AgencyName }}</div>
-            <div class="address" ng-show="app.resultdetails.Address" ng-bind-html="app.makeDirectionsLink(app.resultdetails.Address, app.resultdetails.LatLng)" title="Get directions"></div>
+            <div class="address" ng-if="app.resultdetails.Address" ng-bind-html="app.makeDirectionsLink(app.resultdetails.Address, app.resultdetails.LatLng)" title="Get directions"></div>
 
-            <div class="details" ng-show="app.resultdetails.Details && app.resultdetails_showmore">{{ app.resultdetails.Details }}</div>
+            <div class="details" ng-show="app.resultdetails.Details && app.$window.innerHeight >= 550">{{ app.resultdetails.Details }}</div>
 
-            <div class="services" ng-show="app.resultdetails.Services.length > 0 && app.resultdetails_showmore">Services: {{ app.resultdetails.Services.join(", ") }}</div>
+            <div class="services" ng-show="app.resultdetails.Services.length > 0 && app.$window.innerHeight >= 550">Services: {{ app.resultdetails.Services.join(", ") }}</div>
 
-            <div class="contactus">
-                See an error? <a target="_blank" ng-href="{{ app.email_contact }}">Email us!</a>
-            </div>
+            <div class="contactus">See an error? <a target="_blank" ng-href="{{ app.email_contact }}">Email us!</a></div>
         </div>
 
         <!-- results listing -->

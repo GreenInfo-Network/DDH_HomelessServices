@@ -166,65 +166,6 @@ nav.navbar {
     #resultsmap {
         height: calc(100vh - 103px);
     }
-
-    #resultdetails {
-        position: absolute; /* deep contrivances to position this to the bottom of the GMap, see fixDetailPanelPosition()  */
-        bottom: 0;
-        left: 0;
-        z-index: 100;
-
-        width: 100%;
-        /* let the height be auto: fixDetailPanelPosition() and the panel, have intel to not show TOO much content */
-
-        background-color: white;
-
-        border-top: 2px solid silver;
-
-        padding: 10px 10px 10px 10px;
-
-        > a {
-            float: right;
-            font-size: 15px;
-            cursor: pointer;
-
-            color: black !important;
-            text-decoration: none !important;
-        }
-
-        div {
-            font-size: 13px;
-            line-height: 20px;
-        }
-        div.times {
-            margin-left: 0;
-            margin-bottom: 3px;
-            img {
-                height: 20px;
-                vertical-align: bottom;
-            }
-        }
-        div.name {
-            margin-left: 20px;
-        }
-        div.address {
-            margin-left: 20px;
-        }
-        div.details {
-            margin-left: 20px;
-            font-size: 12px;
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
-        div.services {
-            margin-left: 20px;
-            font-size: 12px;
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
-        div.contactus {
-            margin-top: 2px;
-        }
-    }
 }
 
 #footer {
@@ -334,5 +275,65 @@ div.map-control-button {
         width: 38px !important;
         display: inline;
         margin-left: -5px;
+    }
+}
+
+div.map-control-text {
+}
+
+div.map-control-text-details {
+    /* full-width panel anchored to bottom-left of map, implemented as a control */
+    width: 100%;
+    margin: 0 0 -25px 0;
+    z-index: 10000000 !important;
+
+    border-top: 2px solid silver;
+
+    padding: 10px 10px 10px 10px;
+
+    a {
+        display: inline; /* normally a link inside a control should be a block, being a single button */
+    }
+    > a {
+        float: right;
+        font-size: 15px;
+        cursor: pointer;
+
+        color: black !important;
+        text-decoration: none !important;
+    }
+
+    div {
+        font-size: 13px;
+        line-height: 20px;
+    }
+    div.times {
+        margin-left: 0;
+        margin-bottom: 3px;
+        img {
+            height: 20px;
+            vertical-align: bottom;
+        }
+    }
+    div.name {
+        margin-left: 23px;
+    }
+    div.address {
+        margin-left: 23px;
+    }
+    div.details {
+        margin-left: 23px;
+        font-size: 12px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    div.services {
+        margin-left: 23px;
+        font-size: 12px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    div.contactus {
+        margin-top: 2px;
     }
 }

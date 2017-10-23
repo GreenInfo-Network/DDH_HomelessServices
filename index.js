@@ -175,6 +175,7 @@ var PageController = function () {
         this.$scope = $scope;
         this.$http = $http;
         this.$timeout = $timeout;
+        this.$window = $window;
 
         // cache some dates used for calendar date picker and date buttons
         // used for a minimum date allowed, as well as "is the selected date tomorrow?"
@@ -260,6 +261,10 @@ var PageController = function () {
         var newControl1 = new makeCustomControl(controlDiv1, this.map);
         this.resultsmap.controls[google.maps.ControlPosition.RIGHT_TOP].push(controlDiv1);
 
+        var controlDiv2 = document.getElementById('DetailsControl');
+        var newControl2 = new makeCustomControl(controlDiv2, this.map);
+        this.resultsmap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(controlDiv2);
+
         // add map workarounds: they hate being invisible and malfunction strangely
         // tell GMap that its size has changed (even though it has not)
         angular.element($window).on('resize', function () {
@@ -278,21 +283,6 @@ var PageController = function () {
                 angular.element($window).triggerHandler('resize');
             }
         });
-
-        // watch the resultdetails to see if we are opening the panel
-        // client wants it contrived to match to the bottom-left of the Google Map
-        angular.element($window).on('resize', function () {
-            if (!_this.showmap) return;
-            _this.fixDetailPanelPosition();
-        });
-        $scope.$watch(function () {
-            return _this.resultdetails;
-        }, function () {
-            if (!_this.showmap) return;
-            $timeout(function () {
-                _this.fixDetailPanelPosition();
-            }, 100);
-        }, true);
     }
 
     _createClass(PageController, [{
@@ -521,22 +511,6 @@ var PageController = function () {
             } else {
                 doit();
             }
-        }
-    }, {
-        key: 'fixDetailPanelPosition',
-        value: function fixDetailPanelPosition() {
-            // position the panel so its bottom-left is the bottom-left of the map
-            // the bottom: 0 works because there's nothing below the map's bottom (footer suppressed) but that could change
-            var mapdiv = angular.element($('#resultsmap'))[0];
-            var bottom = 0; // mapdiv.offsetTop + mapdiv.offsetHeight;
-            var left = mapdiv.offsetLeft;
-            var width = mapdiv.offsetWidth;
-            this.resultdetails_position = { bottom: bottom + 'px', left: left + 'px', width: width + 'px' };
-
-            // given our new screen height, would this panel have sufficient space to show these extra details?
-            // it's a wild guess that X pixels would fit the height of whatever arbitrary text may exist,
-            // but it's true more often than it's false
-            this.resultdetails_showmore = window.innerHeight >= 550;
         }
     }, {
         key: 'makeDirectionsLink',
