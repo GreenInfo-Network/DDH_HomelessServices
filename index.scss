@@ -289,7 +289,7 @@ div.map-control-text-details {
 
     border-top: 2px solid silver;
 
-    padding: 10px 10px 10px 10px;
+    padding: 10px 10px 54px 10px; /* 54px bottom = 10px we want + 44 in case we're on iOS and navbar is open */
 
     a {
         display: inline; /* normally a link inside a control should be a block, being a single button */
