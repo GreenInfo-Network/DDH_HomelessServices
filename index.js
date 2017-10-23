@@ -381,6 +381,15 @@ var PageController = function () {
                     item.fields.StartTime = item.fields['Start Hour'] ? (item.fields['Start Hour'] >= '10' ? item.fields['Start Hour'] : item.fields['Start Hour'].substr(1)) + ':' + item.fields['Start Minute'] + ' ' + item.fields['Start AM-PM'] : '';
                     item.fields.EndTime = item.fields['End Hour'] ? (item.fields['End Hour'] >= '10' ? item.fields['End Hour'] : item.fields['End Hour'].substr(1)) + ':' + item.fields['End Minute'] + ' ' + item.fields['End AM-PM'] : '';
 
+                    // new synthetic field: Start time as a JS Date object usable for sorting
+                    if (item.fields['Start Hour'] && item.fields['Start Minute'] && item.fields['Start AM-PM']) {
+                        item.fields.StartTimeObject = new Date();
+                        item.fields.StartTimeObject.setSeconds(0);
+                        item.fields.StartTimeObject.setHours(item.fields['Start AM-PM'] == 'PM' && item.fields['Start Hour'] != '12' ? 12 + parseInt(item.fields['Start Hour']) : parseInt(item.fields['Start Hour']));
+                        item.fields.StartTimeObject.setMinutes(parseInt(item.fields['Start Minute']));
+                    }
+
+                    // finally, ready for use
                     return item.fields;
                 });
 
@@ -441,9 +450,9 @@ var PageController = function () {
                         return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
                     }
 
-                    if (p['Start Hour'] === null) return 1; // no start time = send to start of these tied locations
-                    if (q['Start Hour'] === null) return 1; // no start time = send to start of these tied locations
-                    return '' + p['Start Hour'] + p['Start Minute'] > '' + q['Start Hour'] + q['Start Minute'] ? 1 : -1;
+                    if (p.StartTimeObject === null) return 1; // no start time = send to start of these tied locations
+                    if (q.StartTimeObject === null) return 1; // no start time = send to start of these tied locations
+                    return p.StartTimeObject > q.StartTimeObject ? 1 : -1;
                 });
             };
         }
