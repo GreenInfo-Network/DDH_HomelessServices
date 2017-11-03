@@ -123,6 +123,19 @@ nav.navbar {
             margin-bottom: 10px;
         }
 
+        .resultslist-sorting {
+            text-align: right;
+
+            margin-bottom: 10px;
+
+           a {
+                text-decoration: none !important;
+           }
+            a.active {
+                font-weight: bold;
+            }
+        }
+
         ul {
             list-style-type: none;
             margin-left: -2em;
