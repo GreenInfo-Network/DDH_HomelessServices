@@ -112,7 +112,7 @@ Date.prototype.YMD = function () {
     var y = 1900 + this.getYear();
     var m = 1 + this.getMonth();
     var d = this.getDate();
-    return y + '-' + (m >= 10 ? m : '0' + m) + '-' + d;
+    return y + '-' + (m >= 10 ? m : '0' + m) + '-' + (d >= 10 ? d : '0' + d);
 };
 
 // a function for calculating distance between two [lat, lng] tuples
@@ -191,6 +191,7 @@ var PageController = function () {
             date: null,
             // search results and having in fact ever performed a search
             results: [],
+            sortby: 'time', // "time" or "distance"
             done: false
         };
         // application state stuff
@@ -216,6 +217,9 @@ var PageController = function () {
 
         $scope.$watchCollection(function () {
             return _this.geolocation;
+        }, this.updateGeolocationResultsList(), true);
+        $scope.$watchCollection(function () {
+            return _this.search.sortby;
         }, this.updateGeolocationResultsList(), true);
         $scope.$watchCollection(function () {
             return _this.geolocation;
@@ -323,6 +327,9 @@ var PageController = function () {
             if (!this.search.services.length) return alert("Select the help you are trying to find.");
             if (!this.search.date) return alert("Select a date.");
 
+            // about to do a search; if we're showing any details for a location, they're no longer useful
+            this.resultdetails = null;
+
             // compose the filter formula
             // the syntax is weird, and the documentation is quite poor, but here's a start...
             // https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference
@@ -355,7 +362,10 @@ var PageController = function () {
                     "Authorization": 'Bearer ' + AIRTABLE_API_KEY
                 }
             }).then(function (response) {
+                // UI is no longer busy; dismiss spinner
                 _this2.busy = false;
+
+                // massage the records into shape: fix some array fields, cast some float data seen as lists of strings, etc
                 _this2.search.results = response.data.records.map(function (item) {
                     // extract the fields, then do some data corrections
                     // many of the fields come out as arrays of strings, instead of single values
@@ -371,17 +381,34 @@ var PageController = function () {
                     item.fields.StartTime = item.fields['Start Hour'] ? (item.fields['Start Hour'] >= '10' ? item.fields['Start Hour'] : item.fields['Start Hour'].substr(1)) + ':' + item.fields['Start Minute'] + ' ' + item.fields['Start AM-PM'] : '';
                     item.fields.EndTime = item.fields['End Hour'] ? (item.fields['End Hour'] >= '10' ? item.fields['End Hour'] : item.fields['End Hour'].substr(1)) + ':' + item.fields['End Minute'] + ' ' + item.fields['End AM-PM'] : '';
 
-                    // new synthetic field: Start time as a JS Date object usable for sorting
+                    // new synthetic fields: Start and End time as a JS Date objects usable for sorting and filtering
                     if (item.fields['Start Hour'] && item.fields['Start Minute'] && item.fields['Start AM-PM']) {
                         item.fields.StartTimeObject = new Date();
                         item.fields.StartTimeObject.setSeconds(0);
+                        item.fields.StartTimeObject.setMilliseconds(0);
                         item.fields.StartTimeObject.setHours(item.fields['Start AM-PM'] == 'PM' && item.fields['Start Hour'] != '12' ? 12 + parseInt(item.fields['Start Hour']) : parseInt(item.fields['Start Hour']));
                         item.fields.StartTimeObject.setMinutes(parseInt(item.fields['Start Minute']));
+                    }
+                    if (item.fields['End Hour'] && item.fields['End Minute'] && item.fields['End AM-PM']) {
+                        item.fields.EndTimeObject = new Date();
+                        item.fields.EndTimeObject.setSeconds(0);
+                        item.fields.EndTimeObject.setMilliseconds(0);
+                        item.fields.EndTimeObject.setHours(item.fields['End AM-PM'] == 'PM' && item.fields['End Hour'] != '12' ? 12 + parseInt(item.fields['End Hour']) : parseInt(item.fields['End Hour']));
+                        item.fields.EndTimeObject.setMinutes(parseInt(item.fields['End Minute']));
                     }
 
                     // finally, ready for use
                     return item.fields;
                 });
+
+                // if the search was for Today we can filter out aready-finished events
+                // do this after the data massaging so we have usable Date objects for comparison
+                if (_this2.today == _this2.search.date) {
+                    var rightnow = new Date();
+                    _this2.search.results = _this2.search.results.filter(function (item) {
+                        return item.EndTimeObject > rightnow;
+                    });
+                }
 
                 // add distance decorators and sort by distance from me; note the wrapped nature here
                 _this2.updateGeolocationResultsList()();
@@ -427,22 +454,38 @@ var PageController = function () {
             // wrapped function for use with $watch
             return function () {
                 // tag each result with its distance from my geolocation
-                // then sort the list so closest locations come first
-                // in event of a tie (same location, listed multiple times for different service-times) sort by starting time
                 _this4.search.results.forEach(function (item) {
                     item.DistanceMiles = item.LatLng && _this4.geolocation ? haversineDistance(_this4.geolocation, item.LatLng) : null;
                 });
 
+                // then sort the list so closest locations come first
+                // in event of a tie (same location, listed multiple times for different service-times) sort by starting time
                 _this4.search.results.sort(function (p, q) {
-                    if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
-                    if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
-                    if (p.DistanceMiles != q.DistanceMiles) {
-                        return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
-                    }
+                    // sorting depends on their choice
+                    switch (_this4.search.sortby) {
+                        case 'distance':
+                            if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
+                            if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
+                            if (p.DistanceMiles != q.DistanceMiles) {
+                                return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+                            }
 
-                    if (p.StartTimeObject === null) return 1; // no start time = send to start of these tied locations
-                    if (q.StartTimeObject === null) return 1; // no start time = send to start of these tied locations
-                    return p.StartTimeObject > q.StartTimeObject ? 1 : -1;
+                            if (p.StartTimeObject === null) return 1; // no start time = send to start of these tied locations
+                            if (q.StartTimeObject === null) return 1; // no start time = send to start of these tied locations
+                            return p.StartTimeObject > q.StartTimeObject ? 1 : -1;
+                        case 'time':
+                            if (p.StartTimeObject === null) return 1; // no start time = send to start of list
+                            if (q.StartTimeObject === null) return 1; // no start time = send to start of list
+                            if (p.StartTimeObject != q.StartTimeObject) {
+                                return p.StartTimeObject > q.StartTimeObject ? 1 : -1;
+                            }
+
+                            if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
+                            if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
+                            return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+                        default:
+                            throw 'updateGeolocationResultsList: unknown sorting: ' + _this4.search.sortby;
+                    }
                 });
             };
         }

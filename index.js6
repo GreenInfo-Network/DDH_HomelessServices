@@ -21,7 +21,7 @@ Date.prototype.YMD = function () {
     const y = 1900 + this.getYear();
     const m = 1 + this.getMonth();
     const d = this.getDate();
-    return `${y}-${m >= 10 ? m : '0'+m}-${d}`;
+    return `${y}-${m >= 10 ? m : '0'+m}-${d >= 10 ? d : '0'+d}`;
 };
 
 // a function for calculating distance between two [lat, lng] tuples
