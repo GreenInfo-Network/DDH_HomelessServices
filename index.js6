@@ -309,15 +309,14 @@ class PageController {
                     return item.fields;
                 });
 
-                    // if the search was for Today we can filter out aready-finished events
-                    // do this after the data massaging so we have usable Date objects for comparison
-                    if (this.today == this.search.date) {
-console.log('gda today, remove alread-done events');
-                        const rightnow = new Date();
-                        this.search.results = this.search.results.filter(item => {
-                            return item.EndTimeObject > rightnow;
-                        });
-                    }
+                // if the search was for Today we can filter out aready-finished events
+                // do this after the data massaging so we have usable Date objects for comparison
+                if (this.today == this.search.date) {
+                    const rightnow = new Date();
+                    this.search.results = this.search.results.filter(item => {
+                        return item.EndTimeObject > rightnow;
+                    });
+                }
 
                 // add distance decorators and sort by distance from me; note the wrapped nature here
                 this.updateGeolocationResultsList()();
