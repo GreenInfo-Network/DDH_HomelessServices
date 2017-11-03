@@ -2,6 +2,7 @@
  * DEFINITIONS
  */
 
+$link-blue: blue;
 
 
 /*
@@ -51,9 +52,8 @@ div.contactus {
     font-size: 15px;
 
     a {
-        font-weight: bold;
-        text-decoration: none;
-        color: black !important;
+        text-decoration: underline;
+        color: $link-blue !important;
     }
 }
 
