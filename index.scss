@@ -52,7 +52,7 @@ div.contactus {
     font-size: 15px;
 
     a {
-        text-decoration: underline;
+        text-decoration: underline !important;
         color: $link-blue !important;
     }
 }
@@ -293,14 +293,17 @@ div.map-control-text-details {
 
     a {
         display: inline; /* normally a link inside a control should be a block, being a single button */
+
+        color: $link-blue;
+        text-decoration: underline !important;
     }
-    > a {
+    > a { /* this link would be the X to close the panel */
         float: right;
         font-size: 15px;
         cursor: pointer;
 
         color: black !important;
-        text-decoration: none !important;
+        text-decoration: underline !important;
     }
 
     div {
