@@ -231,6 +231,9 @@ class PageController {
         if (! this.search.services.length) return alert("Select the help you are trying to find.");
         if (! this.search.date) return alert("Select a date.");
 
+        // about to do a search; if we're showing any details for a location, they're no longer useful
+        this.resultdetails = null;
+
         // compose the filter formula
         // the syntax is weird, and the documentation is quite poor, but here's a start...
         // https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference
