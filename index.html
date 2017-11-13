@@ -21,8 +21,8 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL9z5bBfPe2FfwUmUik-xX1_unw-7PwYA"></script>
 
     <!-- local config -->
-    <link href="index.css?Mon Nov 13 2017 08:55:47 GMT-0800 (Pacific Standard Time)" rel="stylesheet" />
-    <script src="index.js?Mon Nov 13 2017 08:55:47 GMT-0800 (Pacific Standard Time)"></script>
+    <link href="index.css?Mon Nov 13 2017 09:21:49 GMT-0800 (Pacific Standard Time)" rel="stylesheet" />
+    <script src="index.js?Mon Nov 13 2017 09:21:49 GMT-0800 (Pacific Standard Time)"></script>
 </head>
 <body ng-app="app" ng-controller="PageController as app">
 
@@ -55,9 +55,17 @@
     <!-- search had no results -->
     <div ng-show="app.search.done && ! app.search.results.length" class="container-fluid" id="noresults">
         <h3>Nothing Found</h3>
+
+        <div class="searchterms">
+            Searching for
+            <span ng-repeat="searchterm in app.search.services" ng-click="app.removeSearchService(searchterm)">
+            {{ searchterm }} <i class="glyphicon glyphicon-remove"></i>
+            </span>
+        </div>
+
         <p>No service providers were found matching all of your needs.</p>
-        <p>Try selecting a different day. Many providers are only open Monday through Friday.</p>
         <p>Try selecting fewer services. Few providers provide all of the services listed.</p>
+        <p>Try selecting a different day. Many providers are only open Monday through Friday.</p>
         <p><button class="btn btn-block btn-primary" ng-click="app.searchBack();"><i class="glyphicon glyphicon-chevron-left"></i> Search Again</button></p>
     </div>
 
@@ -104,6 +112,13 @@
         <div ng-show="! app.showmap" class="container-fluid" id="resultslist">
             <div class="contactus">
                 See an error? <a target="_blank" ng-href="{{ app.email_contact }}">Email us!</a>
+            </div>
+
+            <div class="searchterms">
+                Showing results for
+                <span ng-repeat="searchterm in app.search.services" ng-click="app.removeSearchService(searchterm)">
+                {{ searchterm }} <i class="glyphicon glyphicon-remove"></i>
+                </span>
             </div>
 
             <div class="resultslist-sorting">

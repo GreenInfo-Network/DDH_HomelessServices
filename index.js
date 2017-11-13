@@ -565,6 +565,28 @@ var PageController = function () {
             }
             return '<a target="_blank" href="' + url + '">' + stringwords + '</a>';
         }
+
+        // why we can't have simple things like ng-model on a checkbox: they want this totally outre method of removing single terms in multiple different UIs
+        // remove the given service from our search list, and optionally perform a new search
+
+    }, {
+        key: 'removeSearchService',
+        value: function removeSearchService(servicename) {
+            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { thensearch: true, exitifnoselections: true };
+
+            this.search.services = this.search.services.filter(function (thisterm) {
+                return thisterm != servicename;
+            });
+
+            if (options.exitifnoselections && !this.search.services.length) {
+                this.searchBack();
+                return;
+            }
+
+            if (options.thensearch) {
+                this.performSearch();
+            }
+        }
     }]);
 
     return PageController;
