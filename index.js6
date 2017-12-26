@@ -79,6 +79,7 @@ const SERVICES_OFFERED = [
     "Phone",
     "Referrals",
     "Restroom",
+    "Shelter",
     "Substance Abuse",
 ];
 
