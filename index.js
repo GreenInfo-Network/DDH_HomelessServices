@@ -401,11 +401,12 @@ var PageController = function () {
                     return item.fields;
                 });
 
-                // if the search was for Today we can filter out aready-finished events
+                // if the search was for Today we can filter out already-finished events
                 // do this after the data massaging so we have usable Date objects for comparison
                 if (_this2.today == _this2.search.date) {
                     var rightnow = new Date();
                     _this2.search.results = _this2.search.results.filter(function (item) {
+                        if (!item.EndTimeObject) return true; // no end time given, so it has not ended (overnight events)
                         return item.EndTimeObject > rightnow;
                     });
                 }
