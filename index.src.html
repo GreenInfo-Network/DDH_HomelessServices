@@ -105,8 +105,8 @@
             <div class="details" ng-show="app.resultdetails.Details && app.$window.innerHeight >= 550">{{ app.resultdetails.Details }}</div>
 
             <div class="links" ng-show="app.resultdetails.Facebook || app.resultdetails.Website">
-                <a ng-if="app.resultdetails.Facebook" target=_"blank" ng-href="app.resultdetails.Facebook">Facebook Page<br/></a>
-                <a ng-if="app.resultdetails.Website" target=_"blank" ng-href="app.resultdetails.Website">Website<br/></a>
+                <a ng-if="app.resultdetails.Facebook" target=_"blank" ng-href="{{ app.resultdetails.Facebook }}">Facebook Page<br/></a>
+                <a ng-if="app.resultdetails.Website" target=_"blank" ng-href="{{ app.resultdetails.Website }}">Website<br/></a>
             </div>
 
             <div class="services" ng-show="app.resultdetails.Services.length > 0 && app.$window.innerHeight >= 550">Services: {{ app.resultdetails.Services.join(", ") }}</div>
