@@ -377,6 +377,12 @@ var PageController = function () {
                     item.fields.AgencyName = item.fields.AgencyName[0];
                     item.fields.LatLng = item.fields.lat && item.fields.lng ? [parseFloat(item.fields.lat[0]), parseFloat(item.fields.lng[0])] : null; // can be empty!
                     item.fields.Services = item.fields['Services Offered']; // rename just to be less nuisance
+                    item.fields.Facebook = item.fields.facebook ? item.fields.facebook[0] : null;
+                    item.fields.Website = item.fields.url ? item.fields.url[0] : null;
+
+                    // Website and Facebook lack http:// prefixes so add them
+                    if (item.fields.Facebook && item.fields.Facebook.substr(0, 4).toLowerCase() != 'http') item.fields.Facebook = 'https://' + item.fields.Facebook;
+                    if (item.fields.Website && item.fields.Website.substr(0, 4).toLowerCase() != 'http') item.fields.Website = 'http://' + item.fields.Website;
 
                     // new synthetic field: DistanceMiles from your location; to be filled in afterward, declared here for clarity + documentation
                     item.fields.DistanceMiles = null;
