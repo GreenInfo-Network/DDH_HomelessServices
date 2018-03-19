@@ -367,6 +367,10 @@ var PageController = function () {
 
                 // massage the records into shape: fix some array fields, cast some float data seen as lists of strings, etc
                 _this2.search.results = response.data.records.map(function (item) {
+                    // issue 29: some severely broken records are missing name & address, both of which are required
+                    // not only for processing, but to really be meaningful as a useful search result for our users
+                    if (!item.fields.Address || !item.fields.AgencyName) return null;
+
                     // extract the fields, then do some data corrections
                     // many of the fields come out as arrays of strings, instead of single values
                     item.fields.Address = item.fields.Address[0];
@@ -401,11 +405,17 @@ var PageController = function () {
                     return item.fields;
                 });
 
-                // if the search was for Today we can filter out aready-finished events
+                // now filter out NULLs resulting above, due to severely-broken records
+                _this2.search.results = _this2.search.results.filter(function (result) {
+                    return result;
+                });
+
+                // if the search was for Today we can filter out already-finished events
                 // do this after the data massaging so we have usable Date objects for comparison
                 if (_this2.today == _this2.search.date) {
                     var rightnow = new Date();
                     _this2.search.results = _this2.search.results.filter(function (item) {
+                        if (!item.EndTimeObject) return true; // no end time given, so it has not ended (overnight events)
                         return item.EndTimeObject > rightnow;
                     });
                 }

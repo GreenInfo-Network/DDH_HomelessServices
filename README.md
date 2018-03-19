@@ -36,10 +36,10 @@ P Folder: P_Projects/proj_e_h/greeninfo/NewsMaps/DorothyDayHouseHomelessServices
 
 Babel, SASS/SCSS, Webpack.
 
-**index.html** **index.css** **index.js** are browser-side "deliverables" These are compiled by `npm run build` using webpack. Note that there **are** included in version control, so they may be hosted via Github Pages without us needing to work in additional tooling.
-
 Upon initial setup on your system, run `nvm use` and `yarn install` to set up build tools.
 
-`npm run serve` will run a HTTP server, as well as watching and rebuilding (below).
+**index.html** **index.css** **index.js** are browser-side "deliverables" These are compiled by `npm run build` using webpack. Note that there **are** included in version control, so they may be hosted via Github Pages without us needing to work in additional tooling.
 
-`npm run watch` will watch for changes and re-run `npm rin build` upon detecting changes.
+`npm run watch` will watch for changes and re-run `npm run build` upon detecting changes.
+
+For development, you probably want `npm run serve` This will run a HTTP server with live reload when you change files. Don't forget to do a build though, if you intend to deploy your changes to the site.
