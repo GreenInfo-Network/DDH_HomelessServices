@@ -24,6 +24,8 @@ body {
 
 label {
     font-weight: normal;
+    padding: 4px;
+    margin-bottom: 4px;
 }
 
 /*
@@ -90,9 +92,17 @@ nav.navbar {
 
 #searchform {
     label input {
-        vertical-align: top;
+        vertical-align: center;
     }
 }
+
+#servicelist {
+    height: 40vh;
+    overflow: scroll;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
 
 #noresults {
 }
