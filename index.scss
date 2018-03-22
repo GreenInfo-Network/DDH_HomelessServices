@@ -361,6 +361,11 @@ div.map-control-text-details {
         text-decoration: none !important;
     }
 
+    >div {  /* the DIV containing most other content, gets max-height + scrolling */
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+
     div {
         font-size: 13px;
         line-height: 20px;
