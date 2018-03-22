@@ -257,6 +257,9 @@ var PageController = function () {
         $scope.$watch(function () {
             return _this.search.results;
         }, this.redrawLocationMarkers(), true);
+        $scope.$watch(function () {
+            return _this.resultdetails;
+        }, this.redrawLocationMarkers(), true);
 
         // map custom controls: zoom to my location, zoom to region, Mapbox + OSM credits
         function makeCustomControl(controlDiv, map) {}
@@ -323,9 +326,8 @@ var PageController = function () {
         value: function performSearch() {
             var _this2 = this;
 
-            // check required
+            // check required fields
             if (!this.search.services.length) return alert("Select the help you are trying to find.");
-            if (!this.search.date) return alert("Select a date.");
 
             // about to do a search; if we're showing any details for a location, they're no longer useful
             this.resultdetails = null;
@@ -339,14 +341,15 @@ var PageController = function () {
             // * there is no IN operator for arrays, just substring matching; see the note in SERVICES_OFFERED about overlapping substrings
             var formula = [];
 
-            var weekday = WEEKDAYS_LOOKUP[this.search.date.getDay()];
-            formula.push('FIND("' + weekday + '", Day) > 0');
-
             this.search.services.forEach(function (wanted) {
                 formula.push('FIND("' + wanted + '", {Services Offered}) > 0');
             });
 
-            formula = 'AND(' + formula.join(", ") + ')';
+            if (this.search.date) {
+                var weekday = WEEKDAYS_LOOKUP[this.search.date.getDay()];
+                formula.push('FIND("' + weekday + '", Day) > 0');
+                formula = 'AND(' + formula.join(", ") + ')';
+            }
 
             // compose the query and send it off
             var params = {
@@ -380,7 +383,7 @@ var PageController = function () {
                     item.fields.Services = item.fields['Services Offered']; // rename just to be less nuisance
                     item.fields.Facebook = item.fields.facebook ? item.fields.facebook[0] : null;
                     item.fields.Website = item.fields.url ? item.fields.url[0] : null;
-                    item.fields.Phone = item.fields.phone ? item.fields.phone[0] : null;
+                    item.fields.Phone = item.fields.phone ? item.fields.phone[0].trim() : null;
 
                     // the PhoneNumber is the tel: formatted string: add +1 and keep only numbers
                     item.fields.PhoneNumber = item.fields.Phone ? '+1' + item.fields.Phone.replace(/[^0-9]/g, '') : null;
@@ -531,12 +534,19 @@ var PageController = function () {
                 });
                 _this5.resultsmap.locations = [];
 
+                // will we be giving a marker an alternative icon, highlighting it?
+                var highlight_id = _this5.resultdetails ? _this5.resultdetails.ID : null;
+
                 // load the new ones
                 _this5.search.results.forEach(function (item) {
                     if (!item.LatLng) return; // some lack a location
 
+                    var icon = highlight_id == item.ID ? 'images/location-selected.svg' : 'images/location.svg';
+                    var zindex = highlight_id == item.ID ? 1000 : 0;
+
                     var marker = new google.maps.Marker({
-                        icon: 'images/location.svg',
+                        icon: icon,
+                        zIndex: zindex,
                         position: { lat: item.LatLng[0], lng: item.LatLng[1] },
                         title: item.AgencyName,
                         map: _this5.resultsmap,
