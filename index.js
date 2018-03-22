@@ -373,6 +373,7 @@ var PageController = function () {
 
                     // extract the fields, then do some data corrections
                     // many of the fields come out as arrays of strings, instead of single values
+                    item.fields.ID = item.fields.ID;
                     item.fields.Address = item.fields.Address[0];
                     item.fields.AgencyName = item.fields.AgencyName[0];
                     item.fields.LatLng = item.fields.lat && item.fields.lng ? [parseFloat(item.fields.lat[0]), parseFloat(item.fields.lng[0])] : null; // can be empty!
@@ -431,6 +432,9 @@ var PageController = function () {
                 }
 
                 // add distance decorators and sort by distance from me; note the wrapped nature here
+                // tip: do not put a watch on this.search.results to call updateGeolocationResultsList() which in fact mutates this list in-place by sorting it
+                // in-place mutation is desirable under those watch conditions, where we change the desired sorting and want to modify the list's sequence
+                // but here it effectively becomes an infinite loop
                 _this2.updateGeolocationResultsList()();
 
                 // center the map on our own location
@@ -490,19 +494,24 @@ var PageController = function () {
                                 return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
                             }
 
-                            if (p.StartTimeObject === null) return 1; // no start time = send to start of these tied locations
-                            if (q.StartTimeObject === null) return 1; // no start time = send to start of these tied locations
-                            return p.StartTimeObject > q.StartTimeObject ? 1 : -1;
+                            // if we got here, then neither has a location/distance; break the tie with their Name
+                            return p.AgencyName > q.AgencyName ? 1 : -1;
                         case 'time':
-                            if (p.StartTimeObject === null) return 1; // no start time = send to start of list
-                            if (q.StartTimeObject === null) return 1; // no start time = send to start of list
-                            if (p.StartTimeObject != q.StartTimeObject) {
-                                return p.StartTimeObject > q.StartTimeObject ? 1 : -1;
-                            }
+                            // both items may have start time, end time, neither, both; we want to sort for what opens first and also what ends first,
+                            // and also we want to keep the list stable so two items with same start/end won't flip-flop
+                            // so there's a tree of possible outcomes: earlier/later/no start, earlier/later/no end, tie-breaking by name, ...
+                            // note that the code here is intended for readability and debugging, not compactness ;)
 
-                            if (p.DistanceMiles === null) return 1; // no location = send to the end of the list
-                            if (q.DistanceMiles === null) return -1; // no location = send to the end of the list
-                            return p.DistanceMiles > q.DistanceMiles ? 1 : -1;
+                            // logic is greatly simplified if we don't have to worry about nulls, so fudge some dates
+                            // a blank starter means that it started a looong time ago; blank end means it ends a loooong time in the future
+                            var pstarter = p.StartTimeObject ? p.StartTimeObject.getTime() : new Date(1900, 1, 1).getTime();
+                            var pender = p.EndTimeObject ? p.EndTimeObject.getTime() : new Date(2100, 12, 31).getTime();
+                            var qstarter = q.StartTimeObject ? q.StartTimeObject.getTime() : new Date(1900, 1, 1).getTime();
+                            var qender = q.EndTimeObject ? q.EndTimeObject.getTime() : new Date(2100, 12, 31).getTime();
+
+                            if (pstarter != qstarter) return pstarter > qstarter ? 1 : -1; // different starting times, earlier goes to the front
+                            else if (pender != qender) return pender > qender ? 1 : -1; // different ending times; earlier ending goes to the front
+                            return p.AgencyName > q.AgencyName ? 1 : -1; // same start + end times, sort by name so the output is stable
                         default:
                             throw 'updateGeolocationResultsList: unknown sorting: ' + _this4.search.sortby;
                     }
