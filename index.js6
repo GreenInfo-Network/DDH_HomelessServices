@@ -238,9 +238,8 @@ class PageController {
     }
 
     performSearch () {
-        // check required
+        // check required fields
         if (! this.search.services.length) return alert("Select the help you are trying to find.");
-        if (! this.search.date) return alert("Select a date.");
 
         // about to do a search; if we're showing any details for a location, they're no longer useful
         this.resultdetails = null;
@@ -254,14 +253,15 @@ class PageController {
         // * there is no IN operator for arrays, just substring matching; see the note in SERVICES_OFFERED about overlapping substrings
         let formula = [];
 
-        const weekday = WEEKDAYS_LOOKUP[this.search.date.getDay()];
-        formula.push(`FIND("${weekday}", Day) > 0`);
-
         this.search.services.forEach(function (wanted) {
             formula.push(`FIND("${wanted}", {Services Offered}) > 0`);
         });
 
-        formula = `AND(${formula.join(", ")})`;
+        if (this.search.date) {
+            const weekday = WEEKDAYS_LOOKUP[this.search.date.getDay()];
+            formula.push(`FIND("${weekday}", Day) > 0`);
+            formula = `AND(${formula.join(", ")})`;
+        }
 
         // compose the query and send it off
         var params = {
