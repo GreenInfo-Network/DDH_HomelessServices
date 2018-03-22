@@ -141,6 +141,7 @@
                     <div class="times" ng-show="result.StartTime && result.EndTime">{{ result.StartTime }} - {{ result.EndTime }}</div>
                     <div class="times" ng-show="result.StartTime && ! result.EndTime">Starting at {{ result.StartTime }}</div>
                     <div class="times" ng-show="! result.StartTime && result.EndTime">Until {{ result.EndTime }}</div>
+                    <div class="times" ng-show="! result.StartTime && ! result.EndTime">All Day</div>
 
                     <div class="name indent">{{ result.AgencyName }}</div>
                     <div class="address indent">{{ result.Address }}</div>
