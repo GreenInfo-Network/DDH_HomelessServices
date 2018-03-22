@@ -183,6 +183,7 @@ class PageController {
 
         this.resultsmap.locations = [];
         $scope.$watch(() => this.search.results, this.redrawLocationMarkers(), true);
+        $scope.$watch(() => this.resultdetails, this.redrawLocationMarkers(), true);
 
         // map custom controls: zoom to my location, zoom to region, Mapbox + OSM credits
         function makeCustomControl(controlDiv, map) {}
@@ -438,12 +439,19 @@ class PageController {
             });
             this.resultsmap.locations = [];
 
+            // will we be giving a marker an alternative icon, highlighting it?
+            var highlight_id = this.resultdetails ? this.resultdetails.ID : null;
+
             // load the new ones
             this.search.results.forEach(item => {
                 if (! item.LatLng) return; // some lack a location
 
+                var icon = highlight_id == item.ID ? 'images/location-selected.svg' : 'images/location.svg';
+                var zindex = highlight_id == item.ID ? 1000 : 0;
+
                 const marker = new google.maps.Marker({
-                    icon: 'images/location.svg',
+                    icon: icon,
+                    zIndex: zindex,
                     position: { lat: item.LatLng[0], lng: item.LatLng[1] },
                     title: item.AgencyName,
                     map: this.resultsmap,
