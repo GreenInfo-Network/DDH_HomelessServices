@@ -21,8 +21,8 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL9z5bBfPe2FfwUmUik-xX1_unw-7PwYA"></script>
 
     <!-- local config -->
-    <link href="index.css?Wed Mar 21 2018 20:18:47 GMT-0700 (PDT)" rel="stylesheet" />
-    <script src="index.js?Wed Mar 21 2018 20:18:47 GMT-0700 (PDT)"></script>
+    <link href="index.css?Thu Mar 22 2018 09:24:22 GMT-0700 (Pacific Daylight Time)" rel="stylesheet" />
+    <script src="index.js?Thu Mar 22 2018 09:24:22 GMT-0700 (Pacific Daylight Time)"></script>
 </head>
 <body ng-app="app" ng-controller="PageController as app">
 
@@ -104,7 +104,8 @@
 
             <div class="details" ng-show="app.resultdetails.Details && app.$window.innerHeight >= 550">{{ app.resultdetails.Details }}</div>
 
-            <div class="links" ng-show="app.resultdetails.Facebook || app.resultdetails.Website">
+            <div class="links" ng-show="app.resultdetails.Phone || app.resultdetails.Facebook || app.resultdetails.Website">
+                <a ng-if="app.resultdetails.Phone" target=_"blank" ng-href="tel:{{ app.resultdetails.PhoneNumber }}">{{ app.resultdetails.Phone }}<br/></a>
                 <a ng-if="app.resultdetails.Facebook" target=_"blank" ng-href="{{ app.resultdetails.Facebook }}">Facebook Page<br/></a>
                 <a ng-if="app.resultdetails.Website" target=_"blank" ng-href="{{ app.resultdetails.Website }}">Website<br/></a>
             </div>
@@ -140,6 +141,7 @@
                     <div class="times" ng-show="result.StartTime && result.EndTime">{{ result.StartTime }} - {{ result.EndTime }}</div>
                     <div class="times" ng-show="result.StartTime && ! result.EndTime">Starting at {{ result.StartTime }}</div>
                     <div class="times" ng-show="! result.StartTime && result.EndTime">Until {{ result.EndTime }}</div>
+                    <div class="times" ng-show="! result.StartTime && ! result.EndTime">All Day</div>
 
                     <div class="name indent">{{ result.AgencyName }}</div>
                     <div class="address indent">{{ result.Address }}</div>

@@ -379,6 +379,10 @@ var PageController = function () {
                     item.fields.Services = item.fields['Services Offered']; // rename just to be less nuisance
                     item.fields.Facebook = item.fields.facebook ? item.fields.facebook[0] : null;
                     item.fields.Website = item.fields.url ? item.fields.url[0] : null;
+                    item.fields.Phone = item.fields.phone ? item.fields.phone[0] : null;
+
+                    // the PhoneNumber is the tel: formatted string: add +1 and keep only numbers
+                    item.fields.PhoneNumber = item.fields.Phone ? '+1' + item.fields.Phone.replace(/[^0-9]/g, '') : null;
 
                     // Website and Facebook lack http:// prefixes so add them
                     if (item.fields.Facebook && item.fields.Facebook.substr(0, 4).toLowerCase() != 'http') item.fields.Facebook = 'https://' + item.fields.Facebook;
