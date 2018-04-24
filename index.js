@@ -348,8 +348,9 @@ var PageController = function () {
             if (this.search.date) {
                 var weekday = WEEKDAYS_LOOKUP[this.search.date.getDay()];
                 formula.push('FIND("' + weekday + '", Day) > 0');
-                formula = 'AND(' + formula.join(", ") + ')';
             }
+
+            formula = 'AND(' + formula.join(", ") + ')';
 
             // compose the query and send it off
             var params = {
