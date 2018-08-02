@@ -191,6 +191,6 @@ module.exports = {
      */
     devServer: {
       contentBase: '.',
-      port: 80
+      port: 8000
     }
 };
