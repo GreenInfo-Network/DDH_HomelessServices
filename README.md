@@ -8,6 +8,7 @@ Concept document: https://xd.adobe.com/view/7bb0db8f-e55c-4827-9839-b9bf7be78244
 
 Service locations are hosted at Airtable: https://airtable.com/tblCsWJj89Fo3qzXF/viwBuB5lZ6j5Od1Bn
 
+Note an AirTable API key must be included in the code, and therefore exposed since this is a frontend only app. We have a _read only_ account tied to gin@greeninfo.org (log into Airtable "with Google" using gin@ Gmail creds in 1P). If that account is ever removed from the AirTable base, the site loses access to the data.
 
 ## Domain Name and CNAME File
 
