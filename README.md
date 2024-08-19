@@ -10,6 +10,9 @@ Service locations are hosted at Airtable: https://airtable.com/tblCsWJj89Fo3qzXF
 
 Note an AirTable API key must be included in the code, and therefore exposed since this is a frontend only app. We have a _read only_ account tied to gin@greeninfo.org (log into Airtable "with Google" using gin@ Gmail creds in 1P). If that account is ever removed from the AirTable base, the site loses access to the data.
 
+**PROJECT DEFUNCT 2024** In February 2024 Airtable changed their API and the application ceased to work (with plenty of notice ahead of time). The service had not really caught on, and it was decided not to keep the application updated. In August 2024 the domain homeless-connections.org was up for renewal and was allowed to expire.
+
+
 ## Domain Name and CNAME File
 
 The canonical URL is an alias for https://greeninfo-network.github.io/DDH_HomelessServices/
